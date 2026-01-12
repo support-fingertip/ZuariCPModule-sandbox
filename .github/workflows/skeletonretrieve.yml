@@ -1,0 +1,40 @@
+name: Retrieve from Salesforce
+
+on:
+  workflow_dispatch:
+
+jobs:
+  retrieve:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+          sf --version
+
+      - name: Authenticate to Salesforce
+        run: |
+          echo "${{ secrets.SALESFORCE_AUTH_URL }}" > authfile.txt
+          sf org login sfdx-url --sfdx-url-file authfile.txt --alias deployment-org --set-default
+          rm -f authfile.txt
+
+      - name: Retrieve from Salesforce
+        run: |
+          sf project retrieve start --manifest manifest/package.xml --target-org deployment-org --wait 30
+
+      - name: Commit changes to GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add only what you expect to change (adjust if needed)
+          git add force-app manifest sfdx-project.json
+
+          git diff --staged --quiet || git commit -m "Retrieve from Salesforce [skip ci]"
+          git push
