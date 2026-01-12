@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Floor_Number__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(
+    Floor__c, 
+    &quot;1&quot;, 0,
+    &quot;2&quot;, 0,
+    &quot;3&quot;, 0,
+    &quot;4&quot;, 0,
+    &quot;5&quot;, 0,
+    &quot;6&quot;, 1,
+    &quot;7&quot;, 2,
+    &quot;8&quot;, 3,
+    &quot;9&quot;, 4,
+    &quot;10&quot;, 5,
+    &quot;11&quot;, 6,
+    &quot;12&quot;, 7,
+    &quot;13&quot;, 8,
+    &quot;14&quot;, 9,
+    &quot;15&quot;, 10,
+    &quot;16&quot;, 11,
+    &quot;17&quot;, 12,
+    &quot;18&quot;, 13,
+    &quot;19&quot;, 14,
+    &quot;20&quot;, 15,
+    &quot;21&quot;, 16,
+    &quot;22&quot;, 17,
+    &quot;23&quot;, 18,
+    &quot;24&quot;, 19,
+    &quot;25&quot;, 20,
+    &quot;26&quot;, 21,
+    &quot;27&quot;, 22,
+    &quot;28&quot;, 23,
+    &quot;29&quot;, 24,
+    0  /* Default if no match */
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Floor Number</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

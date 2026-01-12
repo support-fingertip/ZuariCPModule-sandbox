@@ -1,0 +1,1207 @@
+<apex:page standardController="Booking__c" renderAs="pdf" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false" >
+    <head>
+        <style type="text/css" media="print">
+            @page {
+            size: A4;
+            margin:0;
+            font-family: calibri, sans-serif;
+            line-height:1.6;
+            }
+            .photo-container {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #999;
+            text-align: center;
+            border-radius: 10px;
+            overflow: hidden;
+            float: right; 
+            margin-top:5px;
+            margin-right: 30px; 
+            }
+            .checkbox-box {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            }
+            
+            .checkbox {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #000;
+            display: inline-block;
+            margin-right: 5px;
+            text-align: center;
+            line-height: 12px;
+            font-size: 12px;
+            vertical-align: middle;
+            }
+            
+            .checkbox.checked {
+            content: '✓';
+            background-color: #0070d2;
+            color: #fff;
+            font-weight: bold;
+            font-size: 7px !important;
+            }
+            
+        </style>
+    </head>
+    
+    <div style="padding-top:70px">
+        
+    </div>
+    <p style="text-align:center">
+        <strong>Developed by ZUARI INFRAWORLD INDIA LIMITED</strong> 
+    </p>
+    <p style="text-align:center; ">
+        <strong><u>BOOKING FORM</u></strong>
+    </p>
+    
+    <div style="padding-top:250px">
+        
+    </div>
+    <p style="text-align:center">
+        <strong>{!Booking__c.Project1__r.Project__c} - Plots</strong> 
+    </p>
+    <p style="text-align:center">
+        <strong>{!Booking__c.Project1__r.Project__c},{!Booking__c.Project1__r.Project_Address__c}</strong>
+    </p>
+    <p style="text-align:center">
+        <strong>Website: <span style="color:#0462C1"><u>www.zuariinfra.com</u></span></strong>
+    </p>
+    <p style="text-align:center">
+        <strong>RERA No.</strong>{!Booking__c.Project1__r.RERA_NO__c}
+    </p>
+    
+    <div style="page-break-after:always; "></div>
+    
+    <div style="padding-left:15px; padding-right:15px; padding-top:20px; padding-bottom:20px; font-size:12px;">
+        
+        
+        <tr >
+            <td>Application No:{!Booking__c.Name}</td>
+            <td style="padding-left:350px">Project Name: {!Booking__c.Project1__r.Project__c}</td>
+        </tr>
+        <tr>
+            <td>Sales Converter: {!Booking__c.Owner.LastName}</td>
+            <td style="padding-left:350px">Date: {!Booking__c.Booking_Date__c}</td>
+        </tr>
+        <hr style="border: none; height: .5px; background-color: #ccc;" />
+        
+        <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+            <strong> BOOKING FORM</strong>
+            
+        </p>
+        <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+        <p  style="text-align:center; line-height:1.4">
+            <strong>Zuari Infraworld India Limited,</strong> Adventz Center, No.28, Union Street, Off Cubbon Road, <strong>Bengaluru - 560001 <br/>Contact Number - 080 49066900</strong>
+        </p>
+        <hr style="border: none; height:.5px; background-color: #ccc;" />
+        <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+            
+            <strong>APPLICANT'S DETAILS</strong>
+            
+        </p>
+        <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+        <div style="line-height:1.8">
+            <div class="photo-container"> 
+                <span class="photo-content"> Photograph
+                    <!---<apex:outputField value="{!Booking__c.First_Applicant_Photo__c}"/>--->
+                </span>
+            </div>
+            
+            <tr><td>Name Mr. / Dr. / Ms. / Mrs.: <span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center">
+                
+                <span >
+                        <apex:outputText value="{!Booking__c.SLead__r.Salutation}"/> 
+                        <apex:outputText value=" "/> 
+                        <apex:outputText value="{!Booking__c.SLead__r.FirstName}"/> 
+                        <apex:outputText value=" "/> 
+                        <apex:outputText value="{!Booking__c.SLead__r.LastName}"/> 
+                    </span></span></td></tr>
+            <table cellspacing="0" style="border-collapse: collapse; padding: 0; margin: 0; line-height:1.5">
+                
+                
+                <tr> <td style =" padding-right:50px">Date of Birth:
+                    <span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center">
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!Booking__c.Date_of_Birth1__c}"/>
+                        </apex:outputText>
+                    </span>
+                </td>
+                    </tr>
+            </table>
+            
+            <table>
+                <tr><td>Father’s / Husband’s Name:<span style="display:inline-block; border-bottom:.5px solid #000; width:255px; margin-left:5px; text-align:center">
+                     <apex:outputText value="{!Booking__c.Son_Daughter_Wife_of1__c}"/> 
+                        <apex:outputText value=" "/> 
+                    </span> 
+                       
+                    </td></tr>
+            </table>
+            
+            <table>
+                
+                <tr><td> Profession: <span style="display:inline-block; border-bottom:.5px solid #000; width:330px; margin-left:5px; text-align:center">
+                    
+                     <apex:outputText value="{!Booking__c.Profession__c}"/> 
+                        <apex:outputText value=" "/> 
+                    </span></td></tr>
+            </table>
+            
+            <table>
+                
+                <tr><td>Company / Firm Name:<span style="display:inline-block; border-bottom:.5px solid #000; width:275px; margin-left:5px; text-align:center">
+                    <apex:outputText value="{!Booking__c.Employeed_at__c}"/> 
+                        <apex:outputText value=" "/> 
+                     
+                    </span>  </td></tr>
+            </table> 
+            
+            <table>
+                
+                <tr><td>Designation: <span style="display:inline-block; border-bottom:.5px solid #000; width:325px; margin-left:5px; text-align:center">
+                     <apex:outputText value="{!Booking__c.Designation__c}"/> 
+                        <apex:outputText value=" "/> 
+                    
+                    </span>  </td></tr>
+                
+            </table> 
+            <table cellspacing="0" style="border-collapse: collapse; padding: 0; margin: 0; line-height: 1.5;">
+                <tr style="vertical-align: middle;">
+                    
+                    <!-- Marital Status Label -->
+                    <td style="padding-right: 10px;">Marital Status:</td>
+                    
+                    <!-- Married Option -->
+                    <td style="padding: 0 10px;">
+                        <span style="margin-right: 5px;">Married</span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                        </div>
+                    </td>
+                    
+                    <!-- Single Option -->
+                    <td style="padding: 0 10px;">
+                        <span style="margin-right: 5px;">Single</span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'UnMarried', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'UnMarried', 'Yes', '')}
+                        </div>
+                    </td>
+                    
+                    <!-- Anniversary Date Label -->
+                    <td style="padding-left: 90px; padding-right: 20px;">
+                        Anniversary Date:
+                        <span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center">
+                    <apex:outputText value="{0,date,dd/MM/yyyy}">
+                            <apex:param value="{!Booking__c.Date_of_Birth1__c}"/>
+                        </apex:outputText>
+                    </span>
+                    
+                    </td>
+                     <!-- Date Boxes (aligned)
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td> -->
+                </tr>
+            </table>
+            
+            <table>
+                
+                <tr>
+                    <td>Name of the Spouse: <span style="display:inline-block; border-bottom:.5px solid #000; width:220px; margin-left:5px; text-align:center"></span>  </td>
+                </tr>
+                
+            </table>
+            <tr>
+                <td>PAN No.<span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center">
+                     <apex:outputText value="{!Booking__c.PAN_Number__c}"/> 
+                        <apex:outputText value=" "/> 
+                    </span> </td>
+                <td>AADHAR No. <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center">  <apex:outputText value="{!Booking__c.PAN_Number__c}"/> 
+                        <apex:outputText value=" "/> 
+                   </span></td>
+            </tr>
+            <table>
+                
+                
+                <tr><td>Residential Status: Indian / PIO / NRI / Others. If others, please specify <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center">
+                      <apex:outputText value="{!Booking__c.Residential_Status__c}"/> 
+                        <apex:outputText value=" "/> 
+                   
+                    </span> </td></tr>
+            </table>
+            <tr>
+                <td>Mob: <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center">
+                      <apex:outputText value="{!Booking__c.Mobile__c}"/> 
+                        <apex:outputText value=" "/> 
+                   
+                    </span> </td>
+                <td>Email: <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center">
+                     <apex:outputText value="{!Booking__c.Email__c}"/> 
+                        <apex:outputText value=" "/> 
+                   
+                    </span> </td>
+            </tr>
+        </div>
+        
+        
+        <!------------------- co applicant details--------------------------------->
+        
+        <hr style="border: none; height:.5px; background-color: #ccc;" />
+        <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+            
+            <strong>CO APPLICANT’S DETAILS</strong>
+            
+        </p>
+        <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+        <div style="line-height:1.8">
+            <div class="photo-container" style="margin-top:25px"> 
+                <span class="photo-content"> Photograph
+                    <!---<apex:outputField value="{!Booking__c.First_Applicant_Photo__c}"/>--->
+                </span>
+            </div>
+            
+            <tr><td>Name Mr. / Dr. / Ms. / Mrs.: <span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span></td></tr>
+            <table cellspacing="0" style="border-collapse: collapse; padding: 0; margin: 0; line-height:1.5">
+                
+                
+                <tr> <td style =" padding-right:50px">Date of Birth:</td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                </tr>
+            </table>
+            
+            <table>
+                <tr><td>Father’s / Husband’s Name:<span style="display:inline-block; border-bottom:.5px solid #000; width:255px; margin-left:5px; text-align:center"></span> </td></tr>
+            </table>
+            
+            <table>
+                
+                <tr><td> Profession: <span style="display:inline-block; border-bottom:.5px solid #000; width:330px; margin-left:5px; text-align:center"></span></td></tr>
+            </table>
+            
+            <table>
+                
+                <tr><td>Company / Firm Name:<span style="display:inline-block; border-bottom:.5px solid #000; width:275px; margin-left:5px; text-align:center"></span>  </td></tr>
+            </table> 
+            
+            <table>
+                
+                <tr><td>Designation: <span style="display:inline-block; border-bottom:.5px solid #000; width:325px; margin-left:5px; text-align:center"></span>  </td></tr>
+                
+            </table> 
+            <table cellspacing="0" style="border-collapse: collapse; padding: 0; margin: 0; line-height: 1.5;">
+                <tr style="vertical-align: middle;">
+                    
+                    <!-- Marital Status Label -->
+                    <td style="padding-right: 10px;">Marital Status:</td>
+                    
+                    <!-- Married Option -->
+                    <td style="padding: 0 10px;">
+                        <span style="margin-right: 5px;">Married</span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                        </div>
+                    </td>
+                    
+                    <!-- Single Option -->
+                    <td style="padding: 0 10px;">
+                        <span style="margin-right: 5px;">Single</span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'UnMarried', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'UnMarried', 'Yes', '')}
+                        </div>
+                    </td>
+                    
+                    <!-- Anniversary Date Label -->
+                    <td style="padding-left: 90px; padding-right: 20px;">
+                        Anniversary Date:
+                    </td>
+                    
+                    <!-- Date Boxes (aligned) -->
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    <td style="border: .5px solid #000; width: 25px; height: 5px; padding: 0; text-align: center;"></td>
+                    
+                </tr>
+            </table>
+            <table>
+                
+                <tr>
+                    <td>Name of the Spouse: <span style="display:inline-block; border-bottom:.5px solid #000; width:220px; margin-left:5px; text-align:center"></span>  </td>
+                </tr>
+                
+            </table>
+            <tr>
+                <td>PAN No.<span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> </td>
+                <td>AADHAR No. <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span></td>
+            </tr>
+            <table>
+                
+                
+                <tr><td>Residential Status: Indian / PIO / NRI / Others. If others, please specify <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> </td></tr>
+            </table>
+            <tr>
+                <td>Mob: <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> </td>
+                <td>Email: <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span> </td>
+            </tr>
+            <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+            
+            <!-----------------------------Address Section---------->
+            <table width="90%" style="line-height:1">
+                <tr>
+                    <td><strong>Correspondence Address:</strong></td>
+                    <td><strong>Permanent Address:</strong> </td>
+                </tr>
+                <tr  style="height:30px">
+                    <td><strong>(Agreement will be dispatched to this address only)</strong></td>
+                    <td></td>
+                </tr>
+                <tr  style="height:10px">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr style="line-height:1.3">
+                    <td><span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span> </td>
+                    <td><span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span> </td>
+                </tr>
+                <tr style="line-height:1.3">
+                    <td><span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span> </td>
+                    <td><span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span> </td>
+                </tr>
+                <tr style="line-height:1.3">
+                    <td><span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span> </td>
+                    <td><span style="display:inline-block; border-bottom:.5px solid #000; width:250px; margin-left:5px; text-align:center"></span> </td>
+                </tr>
+                <tr style="line-height:1.3">
+                    <td>Pin Code:<span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> </td>
+                    <td>Pin Code:<span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> </td>
+                </tr>
+                <tr style="line-height:1.3">
+                    <td>Tel (R): <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> </td>
+                    <td>Tel (off): <span style="display:inline-block; border-bottom:.5px solid #000; width:205px; margin-left:5px; text-align:center"></span> </td>
+                </tr>
+                
+            </table>
+            <p style="text-align:center; color: #CCC">
+                Signature of Applicants
+            </p>
+            <table width="100%">
+                <tr>
+                    <td width="50%">
+                        <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>   
+                    </td>
+                    <td width="50%">
+                        <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span> 
+                    </td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        
+        
+        
+        <div style="page-break-after:always"></div>
+        <div style="padding-left:30px; padding-right:30px; padding-top:40px;">
+            <table width="100%" cellspacing="0" style="border-collapse: collapse; padding: 1px; margin: 0; line-height:1.2">
+                <tr>
+                    <td Colspan="2" style="border: 1px solid #000; padding:0; margin:0; text-align:center;"><strong>POWER OF ATTORNEY HOLDER DETAILS (IF ANY)</strong></td>
+                </tr>
+                
+                <tr>
+                    <td width="40%" style="border: 1px solid #000; padding:0; margin:0; padding:3px">Power of Attorney grantor’s name</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;"></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: 1px solid #000; padding:0; margin:0;  padding:3px">Power of Attorney holder’s name</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;"></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: 1px solid #000; padding:0; margin:0;  padding:3px">Registration details</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;"></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: 1px solid #000; padding:0; margin:0;  padding:3px">Gender</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;">
+                        <span style="margin-right: 5px; padding-left:30px">Female</span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                        </div>
+                        
+                        <span style="margin-right: 5px; padding-left:30px">Male</span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                        </div>
+                        
+                        
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="border: 1px solid #000; padding:0; margin:0;  padding:3px">Father/Husband Name:</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;"></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: 1px solid #000; padding:0; margin:0;  padding:3px">Date of Birth</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;"></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: 1px solid #000; padding:0; margin:0;  padding:3px" >Address:</td>
+                    <td style="border: 1px solid #000; padding:0; margin:0;"></td>
+                </tr>
+            </table>
+        </div> 
+        
+        <div style="padding: ">
+        </div>   
+        
+        
+        <hr style="border: none; height:1px; background-color: #ccc;" />
+        
+        <!-------------------source of booking---------------------->
+        <div style="">
+            
+            
+            Source of Booking:  
+            <span style="margin-right: ; padding-left:30px">Direct</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Advertisement</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Channel Partner </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Friend / Relative </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Exhibition</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Hoarding </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <div style="padding-top:20px"> </div>
+            
+            
+            
+            <span style="margin-right: ; padding-left:120px">Website </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Existing Customer </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Employee Reference  </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:5px">Other </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+                
+            </div>
+            
+            <div style="padding-top:20px"> </div>
+            <span style="margin-right: ; padding-left:120px">Others Please Specify:  </span> <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>
+            <p style="text-align:justify">
+                Subject to the Scheme and other Terms &amp; Conditions, please allot us a Plot in the Project Zuari Garden City -Plots. We agree to pay the Contract Value as mentioned below (Payment Schedule):
+            </p>
+            
+            
+            
+            
+            <table width="100%" cellspacing="0" style="border-collapse: collapse; padding: 5px; margin: 0; line-height:1">
+                <tr>
+                    <td colspan="6" style="border: .5px solid #000; padding:5px; margin:0;">Plot No. </td>
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:20px">Plot Area (in sq. mts)<br/> Plot Area (in sq.ft)*</td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:15px"></td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:15px">Base Rate<br/> per (sq.ft)</td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:10px"></td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:25px"> Other Infrastructure Charges<br/> per(Sq.ft)**</td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:20px">250</td>
+                    
+                </tr>
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Clubhouse Membership<br/> Charges (One-time)</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong>1.5Lacs + GST</strong></td>
+                    
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Clubhouse Membership<br/> Charges (One-time)</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong>1.5Lacs + GST</strong></td>
+                </tr>
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Advance Maintenance Deposit</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong>1.5Lacs + GST</strong></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Total Sale Consideration***</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong></strong></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Sizes in Feet:</td>
+                    <td colspan="5" style="border: .5px solid #000;  margin:0;">
+                        <span style="margin-right: ; padding-left:30px">30X40 </span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                            
+                        </div>
+                        <span style="margin-right: ; padding-left:20px">30X40 </span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                            
+                        </div>
+                        <span style="margin-right: ; padding-left:20px">Odd </span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                            
+                        </div>
+                        
+                        
+                    </td>
+                </tr>
+                
+                
+            </table>
+            <div style="font-size:11px">
+                <p>
+                    *1 Sqm = 10.764 Sqft.<br/>
+                    ** Applicable GST on Other Infrastructure Charges is to be borne by the Applicant(s). See attached cost sheet (annexure).<br/>
+                    <span style="text-align:justify">  ***Stamp duty, Deficit Stamp Duty, registration fee, legal expenses, taxes and charges are applicable at actuals on the dates of registration of sale agreement and sale deed &amp; shall be extra.</span> 
+                </p>
+                
+            </div>
+            <p>
+                Scheme Details (If any) <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>
+            </p>
+            
+            Mode of Payment:
+            
+            <span style="margin-right: ; padding-left:30px">Self </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            <span style="margin-right: ; padding-left:30px">Home Loan</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div><br/>
+            
+            Preferred Bank:
+            <span style="margin-right: ; padding-left:30px">SBI</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            <span style="margin-right: ; padding-left:30px">HDFC </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            <span style="margin-right: ; padding-left:30px">ICICI </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            <span style="margin-right: ; padding-left:30px">LICHFL </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            <span style="margin-right: ; padding-left:30px">BOB </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            <span style="margin-right: ; padding-left:30px">Other </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+                
+            </div>
+            <p style="padding-left:150px">Others Please Specify:<span style="display:inline-block; border-bottom:.5px solid #000; width:100px; margin-left:5px; text-align:center"></span>
+            </p>
+            
+            <p style="text align justify">
+                I/We hereby apply for allotment of the above mentioned Plot. I/We hereby pay a sum of Rs. <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> 		towards the booking amount. Payment is made vide wire transfer/DD/Cheque No. <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span> 	dated <span style="padding-left:150px">Others Please Specify:</span><span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span> 	drawn on  <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>
+                , branch <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span> <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>	. I/We agree to sign/execute agreement for sale /Sale Deed as per your company’s standard format as and when required by you. I/We, agree to pay the installments as per the payment plan towards the Total Sale consideration of the allotted Plot.
+                I/We have read and understood the terms &amp; conditions as stated in the Application Form and hereby give my/our unconditional acceptance for the same.
+                
+            </p>
+            <div style="text-align:center; padding-left:180px">
+                
+                
+                <table width="60%" cellspacing="0" style="border-collapse: collapse; padding: 5px; margin: 0; line-height:1; text align:center">
+                    <tr>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">Sl. No.</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">Milestones Schedule</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">Percentage</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">1.</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">Booking</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">Rs. 1,00,000/-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">2.</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">01.12.23 – Payment Due (After adjustment of Rs.1,00,000) Subject to execution of Agreement for sale</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">10%</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">3.</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">01.01.24 - Payment Due</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">10%</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">4.</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;">01.05.24 - Payment Due</td>
+                        <td style="border: .5px solid #000; padding:5px; margin:0;"></td>
+                    </tr>
+                    
+                    
+                    
+                </table>
+            </div>
+            <p style="text-align:left; color: #CCC">
+                Signature of Applicants
+            </p>
+            <table width="100%">
+                <tr>
+                    <td width="50%">
+                        <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>   
+                    </td>
+                    <td width="50%">
+                        <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span> 
+                    </td>
+                </tr>
+                
+            </table>
+            
+            
+            
+        </div>
+        
+        <div style="page-break-after:always"></div>   
+        
+        <div style="padding-top:60px">
+            
+            
+            <hr style="border: none; height:.5px; background-color: #ccc;" />
+            <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+                
+                <strong>NOTES and COMMENTS</strong>
+                
+            </p>
+            <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+            <br/>
+            
+            <hr style="border: none; height:.5px; background-color: #ccc;" />
+            
+            <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+                
+                <strong>ASSOCIATE APPLICATION FORM</strong>
+                
+            </p>
+            <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+            
+            <p >
+                Dear Sir/Madam,<br/>
+                <span style="text-align:justify"> I/We representing <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>	 having RERA registration no. <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>	 have sold a Plot in your project <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>		.
+                    My/Our	client	<span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>		residing	at<span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>
+                    
+                    has hereby applied for allotment of the above mentioned Plot and has remitted here with a sum of Rs. <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>	  vide wire transfer/DD/Cheque No.<span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>
+                    dated <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>			drawn	on	<span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>	,	branch <span style="display:inline-block; border-bottom:.5px solid #000; width:300px; margin-left:5px; text-align:center"></span>
+                    which on execution of the agreement for sale is to be considered as booking amount.</span>
+                
+            </p>
+            
+            <hr style="border: none; height:.5px; background-color: #ccc;" />
+            
+            <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+                
+                <strong>Details of Plot booked by Associate</strong>
+                
+            </p>
+            <hr style="border: none; height: 1.5px; background-color: #ccc;" />
+            <table width="100%" cellspacing="0" style="border-collapse: collapse; padding: 5px; margin: 0; line-height:1">
+                <tr>
+                    <td colspan="6" style="border: .5px solid #000; padding:5px; margin:0;">Plot No. </td>
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:20px">Plot Area (in sq. mts)<br/> Plot Area (in sq.ft)*</td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:15px"></td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:15px">Base Rate<br/> per (sq.ft)</td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:10px"></td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:25px"> Other Infrastructure Charges<br/> per(Sq.ft)**</td>
+                    <td style="border: .5px solid #000; padding:5px; margin:0; width:20px">250</td>
+                    
+                </tr>
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Clubhouse Membership<br/> Charges (One-time)</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong>1.5Lacs + GST</strong></td>
+                    
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Clubhouse Membership<br/> Charges (One-time)</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong>1.5Lacs + GST</strong></td>
+                </tr>
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Advance Maintenance Deposit</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong>1.5Lacs + GST</strong></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Total Sale Consideration***</td>
+                    <td colspan="5" style="border: .5px solid #000; padding:5px; margin:0;"><strong></strong></td>
+                </tr>
+                
+                <tr>
+                    <td style="border: .5px solid #000; padding:5px; margin:0;">Sizes in Feet:</td>
+                    <td colspan="5" style="border: .5px solid #000;  margin:0;">
+                        <span style="margin-right: ; padding-left:30px">30X40 </span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                            
+                        </div>
+                        <span style="margin-right: ; padding-left:20px">30X40 </span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                            
+                        </div>
+                        <span style="margin-right: ; padding-left:20px">Odd </span>
+                        <div style="display: inline-block; vertical-align: middle;"
+                             class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                            {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                            
+                        </div>
+                        
+                        
+                    </td>
+                </tr>
+                
+                
+            </table>
+            <div style="font-size:11px">
+                <p>
+                    *1 Sqm = 10.764 Sqft.<br/>
+                    ** Applicable GST on Other Infrastructure Charges is to be borne by the Applicant(s). See attached cost sheet (annexure).<br/>
+                    <span style="text-align:justify">  ***Stamp duty, Deficit Stamp Duty, registration fee, legal expenses, taxes and charges are applicable at actuals on the dates of registration of sale agreement and sale deed &amp; shall be extra.</span> 
+                </p>
+            </div>
+            
+            <hr style="border: none; height:.5px; background-color: #ccc;" />
+            
+            <p style="text-align:center; margin-top:-5px; margin-bottom:-5px; color: #382F84">
+                
+                <strong>NOTE</strong>
+                
+            </p>
+            <hr style="border: none; height: 1.5px; background-color: #ccc;" />  
+            <p>
+                In case of cancellation of the above said plot please note that payments made to the associates for rendering their services will be deducted from the payment received from the customer prior to settlement.
+            </p> 
+            <p>
+                All the other terms and conditions are applicable as per the agreement executed between associate and the developer.
+            </p>
+            
+            Has the associate given you the complete overview of the project?
+            
+            <span style="margin-right: ; padding-left:20px">Yes </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:20px">No</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            Has the associate accompanied you for a site inspection?
+            
+            <span style="margin-right: ; padding-left:20px">Yes </span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>
+            
+            <span style="margin-right: ; padding-left:20px">No</span>
+            <div style="display: inline-block; vertical-align: middle;"
+                 class="{!IF(Booking__c.Marital_Status__c == 'Married', 'checkbox checked', 'checkbox')}">
+                {!IF(Booking__c.Marital_Status__c == 'Married', 'Yes', '')}
+                
+            </div>   
+            
+            <p>
+                Signature(s):
+            </p>
+            <table>
+                <tr>
+                    <td> 1) 	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                    <td></td>
+                    <td>2) <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                </tr> 
+                <tr>
+                    <td style="text-align:center">(Applicant)</td>
+                    <td></td>
+                    <td style="text-align:center">(Co Applicant)</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align:center; padding-top:30px"><span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span></td>
+                    <td style="text-align:center; padding-top:30px"><span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span></td>
+                    <td style="text-align:center; padding-top:30px"><span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span></td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align:center; padding-top:10px">(Associate Sign)</td>
+                    <td style="text-align:center; padding-top:10px">(Associate Name)</td>
+                    <td style="text-align:center; padding-top:10px">(Seal)</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align:center; padding-top:30px"><span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span></td>
+                    <td style="text-align:center; padding-top:30px"><span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span></td>
+                    <td style="text-align:center; padding-top:30px"></td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align:center; padding-top:10px">(Sales Converter Sign)</td>
+                    <td style="text-align:center; padding-top:10px">(Name)</td>
+                    <td style="text-align:center; padding-top:10px"></td>
+                </tr>
+                
+            </table>
+            
+            
+            
+        </div>
+        
+        <div style="page-break-after:always"></div>
+        
+        
+        <div style="padding-top:60px" >
+            
+            <hr style="border: none; height:1px; background-color: #ccc; " />
+            <p style="text-align:center; color:#382F84; margin-top:2px">TERMS AND CONDITIONS OF THE APPLICATION</p> 
+            <hr style="border: none; height:.5px; background-color: #ccc;" />
+            <div style="font-size:13px">
+                
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">1.</td>
+                    <td>The Application is the offer being made by the Applicant/s and is not a concluded contract, save and except the terms of clause 6 hereof.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">2.</td>
+                    <td>The Promoter reserves the right to reject the Application with or without any reasons.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">3.</td>
+                    <td>The Applicant/s shall come forward to execute the Agreement for Sale, within 30 days of the application being accepted by Promoter will execute the agreement within the time period and purchaser has to complete formality within 7 days of receipt of the same</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">4.</td>
+                    <td>	The Applicant/s has/have been informed and is fully aware and undertake that on execution of the Agreement for Sale 10% of the total sale consideration shall be paid as the Booking Amounts and the balance amounts to be paid in terms of such Agreement for sale.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">5.</td>
+                    <td>The Applicant/s has/ have initially deposited an amount of Rs. 1,00,000/- (Rupees One Lakh Only) as booking amount deposit by way of cheque/wire transfer / drawn on.<span style="display:inline-block; border-bottom:.5px solid #000; width:100px; margin-left:5px; text-align:center"></span>	Bank, <span style="display:inline-block; border-bottom:.5px solid #000; width:100px; margin-left:5px; text-align:center"></span>  Branch issued in favour of the Promoter. On the application being accepted and the Promoter allotting the Plot to the Applicant/s, this amount shall be part of the booking amount.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">6.</td>
+                    <td>This application for allotment is not an assurances having been given by the promoter for the sale of the plot unless an Agreement for Sale is executed between the Promoter and Applicant/s.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">7.</td>
+                    <td>The Applicant/s will not question the sale price of any other purchaser nor will the Applicant/s be entitled to compare the same with other purchasers,</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">8.</td>
+                    <td>In the event the Agreement for Sale are not executed within the period set out in clause 3 above this application for allotment shall stand cancelled automatically and an administrative fee of Rs. 1,00,000/- shall be deducted along with tax and cess as applicable.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">9.</td>
+                    <td>The Applicant/s has verified the sanction plan of the project/phase in which the Applicant has made an application to acquire the Plot.</td>
+                </tr>
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">10.</td>
+                    <td>	Notice sent to the First Applicant at the address given by the Applicant in the application shall be sufficient proof of service.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">11.</td>
+                    <td>The applicant is aware that the Promoter is developing Zuari Garden City in Phases and certain common amenities (clubhouse and swimming pool) shall be developed at a later stage reasonably estimates to be in the month of December, 2026.</td>
+                </tr>
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">12.</td>
+                    <td>The Application for Allotment made by the Applicant/s is not transferable unless consented by the Promoter.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">13.</td>
+                    <td>	The Applicant/s further agree to execute the agreement as per the clause number 3 above and abide by the terms and conditions laid down therein which would then be the concluded contract.</td>
+                </tr>
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">14.</td>
+                    <td>Request from the Applicant(s) for shifting from one plot number to another plot number either in the same or another project will be entertained by Promoter at its sole discretion.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">15.</td>
+                    <td>The applicable statutory charges from time to time will be in line with the change from the authorities like state and central government/departments to be paid by the customer.</td>
+                </tr>
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">16.</td>
+                    <td>The applicable Stamp duty &amp; Registrations expenses on the agreement/s and sale deed/s to be borne by Applicant/s separately at the time of Registration, in addition to the amounts payable to the Promoter.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">17.</td>
+                    <td>	All disputes relating to/arising out of the application are subject to the exclusive jurisdiction of the courts of Bangalore.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">18.</td>
+                    <td>	If Applicant is NRI/PIO: I/We hereby declare that I/We confirm that I/we is/are non-resident Indian/Person of Indian origin and shall comply with all statutory compliances applicable by laws and rules in India applicable for purchase of plots sold by the Company. The Company shall not be liable for any non-compliance on my/our part, if any.</td>
+                </tr>
+                
+                <tr width="100%">
+                    <td style="width:5%; padding-left:10px; vertical-align:top">19.</td>
+                    <td>	All pictorial representations are conceptual.</td>
+                </tr>
+                
+                <p>
+                    <strong>Declaration: The undersigned applicants do hereby declare that the information furnished is irrevocable, true and correct and no material fact has been concealed there from. I/We have gone through the terms and conditions contained herein and they are acceptable to us and our transferees/successors. I/We hereby declare that incase of non-allotment of the Plot my/our claim shall be limited only to the extent of the amount paid by me/us in relation to this booking abiding by the terms and conditions of the booking.</strong>
+                </p>
+                <table>
+                    <tr>
+                        <td>Signature(s): 1) 	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                        <td style="padding-left:100px">2) <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                    </tr> 
+                    <tr>
+                        <td style="text-align:center">(Applicant)</td>
+                        <td style="text-align:center; padding-left:100px">(Co Applicant)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:10px">Place 	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                        <td style="text-align:center; padding-left:100px; padding-top:10px">Date: <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                    </tr> 
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div style="page-break-after:always"></div>
+        
+        <div style="text-size:14px; line-height:1.7; padding-top:60px">
+            <hr style="border: none; height:1px; background-color: #ccc; " />
+            <p style="text-align:center; color:#382F84; margin-top:2px"> 
+                NOMINATION FORM (OPTIONAL)
+            </p> 
+            <hr style="border: none; height:.5px; background-color: #ccc;" />   
+            <p style="text-align:justify;">
+                I/We have booked a Plot as per this Application. I/We hereby nominate Mr. / Ms. <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span> 	 [Relationship:  Mother/Father/Spouse  /Son/Daughter  (major  in  age)  (If  not  major  Guardian’s  Details <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>
+                )] to be my/our sole and exclusive Nominee and hereby authorize Zuari Infraworld India Limited to transfer this Application, Agreements to be executed by me/us and all the benefits and liabilities to and in favour of my/our above mentioned Nominee without insisting on production of any proof of succession and he / she shall be entirely responsible to perform and take possession and get the registration of Land /Apartment in terms hereof and in terms of all documents to be executed in furtherance hereto. Upon such transfer, the responsibility of ZIIL shall cease and they shall not be answerable to any other person claiming under me/us. I/We have read and understood this nomination form and also informed my/our aforesaid Nominee of its execution.
+                
+            </p>
+            <div style="padding-top:10px"> </div>
+            
+            <p>
+                Executed by me on this the <span style="display:inline-block; border-bottom:.5px solid #000; width:60px; margin-left:5px; text-align:center"></span> day of  <span style="display:inline-block; border-bottom:.5px solid #000; width:100px; margin-left:5px; text-align:center"></span>	in presence of the witnesses mentioned below:
+            </p>   
+            
+            <table>
+                <tr>
+                    <td>Signature(s): 1) 	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                    <td>2) <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                </tr> 
+                <tr>
+                    <td style="text-align:center">(Applicant)</td>
+                    <td style="text-align:center">(Co Applicant)</td>
+                </tr>
+                <tr >
+                    <td style= "height:20px"></td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td>Place 	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                    <td>Date: <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                </tr> 
+                
+            </table>
+            <p style="margin-bottom:-5px">
+                
+                
+                <strong>Withness:</strong>
+            </p>
+            <table >
+                <tr>
+                    <td>1.Name:  	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                    <td style="padding-left:100px">2. Name: <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                </tr> 
+                <tr>
+                    <td>Address:   	 <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>   
+                    <td style="padding-left:100px">Address:  <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>	</td>
+                </tr> 
+            </table>
+            <p>
+                Nomination Accepted and updated in File on <span style="display:inline-block; border-bottom:.5px solid #000; width:80px; margin-left:5px; text-align:center"></span> 	by 	<span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>
+            </p>
+            
+            <hr style="border: none; height:1px; background-color: #ccc; " />
+            <p style="text-align:center; color:#382F84; margin-top:2px"> 
+                <strong>FOR OFFICE USE ONLY</strong>
+            </p> 
+            <hr style="border: none; height:.5px; background-color: #ccc;" />   
+            
+            <p>
+                Plot: <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span> 	Area (sq mt, sq.ft): <span style="display:inline-block; border-bottom:.5px solid #000; width:60px; margin-left:5px; text-align:center"></span> 	 Total Rate (per sq. ft) <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span>  	Contract Value Rs. <span style="display:inline-block; border-bottom:.5px solid #000; width:100px; margin-left:5px; text-align:center"></span>  	(Approx.)
+            </p>
+            <div style="padding-top:30px"> </div>
+            
+            Received at the time of booking an amount of Rs. <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span> 			(Rupees <span style="display:inline-block; border-bottom:.5px solid #000; width:80px; margin-left:5px; text-align:center"></span> 	only) vide <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span>  	No. <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span> 	Dated <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span>  Drawn on <span style="display:inline-block; border-bottom:.5px solid #000; width:80px; margin-left:5px; text-align:center"></span>  and acknowledged vide Receipt No. <span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span> Dated 	<span style="display:inline-block; border-bottom:.5px solid #000; width:30px; margin-left:5px; text-align:center"></span> 	, (accepted subject to Scheme)
+            
+            <p>
+                Source: <span style="display:inline-block; border-bottom:.5px solid #000; width:150px; margin-left:5px; text-align:center"></span> 
+            </p>
+            
+            <table style="line-height:1; border-spacing:5px;">
+                <tr>
+                    <td style="border: .5px solid #000;  text-align:center; padding-top:40px; padding-bottom:5px; padding-left:10px; padding-right:20px"> <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>
+                        <br/>
+                        (Sales Converter)
+                        
+                    </td>  
+                    <td></td>
+                    
+                    <td style="border: .5px solid #000;  text-align:center; padding-top:40px; padding-bottom:5px; padding-left:10px; padding-right:20px"> <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>
+                        <br/>
+                        (Sales Head)
+                        
+                    </td> 
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td style="border: .5px solid #000;  text-align:center; padding-top:40px; padding-bottom:5px; padding-left:10px; padding-right:20px"> <span style="display:inline-block; border-bottom:.5px solid #000; width:200px; margin-left:5px; text-align:center"></span>
+                        <br/>
+                        (CRM)
+                        
+                    </td>
+                    <td></td>
+                    
+                </tr>
+            </table>
+            
+        </div>
+    </div>
+    
+    
+    
+</apex:page>
