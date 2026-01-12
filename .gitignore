@@ -1,0 +1,10 @@
+# Node / general
+node_modules/
+dist/
+.env
+.DS_Store
+
+# SFDX
+.sfdx/
+.localdevserver/
+.vscode/

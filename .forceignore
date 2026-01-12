@@ -1,0 +1,12 @@
+# SFDX / Salesforce
+.sfdx/
+local/
+node_modules/
+*.log
+.DS_Store
+*.tmp
+.classpath
+.project
+.settings/
+.idea/
+.vscode/
