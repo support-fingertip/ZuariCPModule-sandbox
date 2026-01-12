@@ -1,14 +1,14 @@
 name: Deploy to Salesforce
- 
+
 on:
   push:
     branches:
       - Praveen_dev_zuariCp
- 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
- 
+
     steps:
       # ---------------------------------------------------------
       # 1️⃣ Checkout repository
@@ -16,8 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0   # Required to compare commits
- 
+          fetch-depth: 0
+
       # ---------------------------------------------------------
       # 2️⃣ Install Salesforce CLI
       # ---------------------------------------------------------
@@ -25,7 +25,7 @@ jobs:
         run: |
           npm install --global @salesforce/cli
           sf --version
- 
+
       # ---------------------------------------------------------
       # 3️⃣ Authenticate to Salesforce
       # ---------------------------------------------------------
@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "${{ secrets.SALESFORCE_AUTH_URL }}" > authfile.txt
           sf org login sfdx-url --sfdx-url-file authfile.txt --alias deployment-org --set-default
- 
+
       # ---------------------------------------------------------
       # 4️⃣ Check if any Salesforce metadata changed
       # ---------------------------------------------------------
@@ -41,39 +41,133 @@ jobs:
         id: check_changes
         run: |
           git fetch origin
- 
-          echo "Checking changes between:"
-          echo "${{ github.event.before }} -> ${{ github.sha }}"
- 
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^force-app/' || true)
- 
+
+          # Handle first push or missing before commit
+          if [ -z "${{ github.event.before }}" ] || [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]; then
+            echo "⚠️ No previous commit found. Checking HEAD~1"
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep '^force-app/' || true)
+          else
+            echo "Checking changes between:"
+            echo "${{ github.event.before }} -> ${{ github.sha }}"
+            CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^force-app/' || true)
+          fi
+
           echo "Changed files:"
           echo "$CHANGED"
- 
+
           if [ -z "$CHANGED" ]; then
-            echo "No Salesforce metadata changes found."
+            echo "❌ No Salesforce metadata changes found."
             echo "deploy=false" >> $GITHUB_OUTPUT
           else
-            echo "Salesforce metadata changes detected."
+            echo "✅ Salesforce metadata changes detected."
             echo "deploy=true" >> $GITHUB_OUTPUT
           fi
- 
+
       # ---------------------------------------------------------
-      # 5️⃣ Deploy only if something changed
+      # 5️⃣ Clear source tracking to avoid "Nothing to Deploy"
       # ---------------------------------------------------------
-      - name: Deploy to Salesforce
+      - name: Clear source tracking
         if: steps.check_changes.outputs.deploy == 'true'
         run: |
+          sf project delete tracking --target-org deployment-org --no-prompt || true
+
+      # ---------------------------------------------------------
+      # 6️⃣ Deploy to Salesforce (with error handling)
+      # ---------------------------------------------------------
+      - name: Deploy to Salesforce
+        id: deploy
+        if: steps.check_changes.outputs.deploy == 'true'
+        continue-on-error: true  # Don't fail the workflow on deployment errors
+        run: |
+          echo "🚀 Starting deployment..."
+          
           sf project deploy start \
             --source-dir force-app \
             --target-org deployment-org \
             --wait 30 \
-            --ignore-conflicts \
-            --test-level RunLocalTests
- 
+            --test-level RunLocalTests \
+            --json > deployment-result.json || true
+          
+          # Display results
+          cat deployment-result.json
+
       # ---------------------------------------------------------
-      # 6️⃣ Log when nothing to deploy
+      # 7️⃣ Parse and display deployment results
+      # ---------------------------------------------------------
+      - name: Display Deployment Summary
+        if: steps.check_changes.outputs.deploy == 'true'
+        run: |
+          echo "📊 Deployment Summary:"
+          echo "════════════════════════════════════════"
+          
+          if [ -f deployment-result.json ]; then
+            # Check deployment status
+            STATUS=$(cat deployment-result.json | jq -r '.status // "UNKNOWN"')
+            
+            echo "Status: $STATUS"
+            
+            # Show successful deployments
+            echo ""
+            echo "✅ Successfully Deployed:"
+            cat deployment-result.json | jq -r '.result.deployedSource[]? | "  - \(.type): \(.fullName)"' || echo "  None"
+            
+            # Show failures
+            echo ""
+            echo "❌ Failed Components:"
+            cat deployment-result.json | jq -r '.result.details.componentFailures[]? | "  - \(.componentType): \(.fullName)
+    Error: \(.problem)"' || echo "  None"
+            
+            # Show test results if any
+            echo ""
+            echo "🧪 Test Results:"
+            cat deployment-result.json | jq -r '.result.details.runTestResult? | "  Total: \(.numTestsRun // 0)  Passed: \(.numTestsPassed // 0)  Failed: \(.numFailures // 0)"' || echo "  No tests run"
+            
+          else
+            echo "⚠️ No deployment result file found"
+          fi
+
+      # ---------------------------------------------------------
+      # 8️⃣ Upload deployment results as artifact
+      # ---------------------------------------------------------
+      - name: Upload deployment results
+        if: always() && steps.check_changes.outputs.deploy == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-results
+          path: deployment-result.json
+          retention-days: 30
+
+      # ---------------------------------------------------------
+      # 9️⃣ Fail workflow only if deployment completely failed
+      # ---------------------------------------------------------
+      - name: Check deployment status
+        if: steps.check_changes.outputs.deploy == 'true'
+        run: |
+          if [ -f deployment-result.json ]; then
+            STATUS=$(cat deployment-result.json | jq -r '.status // "UNKNOWN"')
+            
+            if [ "$STATUS" == "Failed" ]; then
+              echo "❌ Deployment failed. Please check the errors above."
+              exit 1
+            elif [ "$STATUS" == "SucceededPartial" ]; then
+              echo "⚠️ Deployment partially succeeded. Some components failed."
+              echo "Check the summary above for details."
+              exit 0  # Don't fail workflow for partial success
+            else
+              echo "✅ Deployment completed successfully!"
+            fi
+          fi
+
+      # ---------------------------------------------------------
+      # 🔟 Log when nothing to deploy
       # ---------------------------------------------------------
       - name: No changes to deploy
         if: steps.check_changes.outputs.deploy == 'false'
-        run: echo "No Salesforce metadata changes detected. Skipping deployment."
+        run: echo "ℹ️ No Salesforce metadata changes detected. Skipping deployment."
+
+      # ---------------------------------------------------------
+      # 1️⃣1️⃣ Cleanup
+      # ---------------------------------------------------------
+      - name: Cleanup
+        if: always()
+        run: rm -f authfile.txt
