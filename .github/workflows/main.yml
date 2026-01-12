@@ -8,21 +8,72 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
+      # ---------------------------------------------------------
+      # 1️⃣ Checkout repository
+      # ---------------------------------------------------------
       - name: Checkout code
         uses: actions/checkout@v3
-      
+        with:
+          fetch-depth: 0   # Required to compare commits
+
+      # ---------------------------------------------------------
+      # 2️⃣ Install Salesforce CLI
+      # ---------------------------------------------------------
       - name: Install Salesforce CLI
         run: |
           npm install --global @salesforce/cli
           sf --version
-      
+
+      # ---------------------------------------------------------
+      # 3️⃣ Authenticate to Salesforce
+      # ---------------------------------------------------------
       - name: Authenticate to Salesforce
         run: |
           echo "${{ secrets.SALESFORCE_AUTH_URL }}" > authfile.txt
           sf org login sfdx-url --sfdx-url-file authfile.txt --alias deployment-org --set-default
-      
-      - name: Deploy to Salesforce
+
+      # ---------------------------------------------------------
+      # 4️⃣ Check if any Salesforce metadata changed
+      # ---------------------------------------------------------
+      - name: Check if anything to deploy
+        id: check_changes
         run: |
-          sf project deploy start --source-dir force-app --target-org deployment-org --wait 30 --ignore-conflicts --test-level RunLocalTests
+          git fetch origin
+
+          echo "Checking changes between:"
+          echo "${{ github.event.before }} -> ${{ github.sha }}"
+
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^force-app/' || true)
+
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          if [ -z "$CHANGED" ]; then
+            echo "No Salesforce metadata changes found."
+            echo "deploy=false" >> $GITHUB_OUTPUT
+          else
+            echo "Salesforce metadata changes detected."
+            echo "deploy=true" >> $GITHUB_OUTPUT
+          fi
+
+      # ---------------------------------------------------------
+      # 5️⃣ Deploy only if something changed
+      # ---------------------------------------------------------
+      - name: Deploy to Salesforce
+        if: steps.check_changes.outputs.deploy == 'true'
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org deployment-org \
+            --wait 30 \
+            --ignore-conflicts \
+            --test-level RunLocalTests
+
+      # ---------------------------------------------------------
+      # 6️⃣ Log when nothing to deploy
+      # ---------------------------------------------------------
+      - name: No changes to deploy
+        if: steps.check_changes.outputs.deploy == 'false'
+        run: echo "No Salesforce metadata changes detected. Skipping deployment."
