@@ -10,7 +10,7 @@ public with sharing class LastMonthLeadFetcher {
         // Use start inclusive and end exclusive to cover full last month
         Datetime startDT = Datetime.newInstance(firstDayLastMonth.year(), firstDayLastMonth.month(), firstDayLastMonth.day(), 0, 0, 0);
         Datetime endDT = Datetime.newInstance(firstDayThisMonth.year(), firstDayThisMonth.month(), firstDayThisMonth.day(), 0, 0, 0);
-  System.debug('Test');
+  System.debug('Test---');
       
         List<Lead> leads = [
             SELECT Id, Name, Company, Email, CreatedDate
