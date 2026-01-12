@@ -1,26 +1,26 @@
 name: Create SFDC Project Skeleton
 
-on: 
-  workflow_dispatch: 
-    inputs:
-      branch_name:
-        description: 'Branch name for the SFDC skeleton'
-        required:  true
-        default:  'sfdc-project'
-      project_name: 
-        description: 'Salesforce project name'
+on:  
+  workflow_dispatch:  
+    inputs: 
+      branch_name: 
+        description: 'Branch name for the SFDC skeleton (new or existing)'
+        required: true
+        default: 'sfdc-project'
+      project_name:  
+        description:  'Salesforce project name'
         required: true
         default: 'my-sfdc-project'
-      api_version:
-        description:  'Salesforce API version'
+      api_version: 
+        description: 'Salesforce API version'
         required: true
         default: '59.0'
 
-jobs:
-  create-skeleton:
+jobs: 
+  create-skeleton: 
     runs-on: ubuntu-latest
     
-    steps:
+    steps: 
       # ---------------------------------------------------------
       # 1️⃣ Checkout repository
       # ---------------------------------------------------------
@@ -32,28 +32,42 @@ jobs:
       # ---------------------------------------------------------
       # 2️⃣ Configure Git
       # ---------------------------------------------------------
-      - name: Configure Git
+      - name:  Configure Git
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users. noreply.github.com"
+          git config user.email "github-actions[bot]@users.noreply. github.com"
 
       # ---------------------------------------------------------
-      # 3️⃣ Create new branch
+      # 3️⃣ Checkout branch (existing or new)
       # ---------------------------------------------------------
-      - name: Create new branch
+      - name: Checkout branch
         run: |
-          echo "🌿 Creating branch: ${{ github. event.inputs.branch_name }}"
-          git checkout -b ${{ github.event.inputs.branch_name }}
+          BRANCH="${{ github.event.inputs. branch_name }}"
+          
+          # Fetch all remote branches
+          git fetch origin
+          
+          # Check if branch exists remotely
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "✅ Branch '$BRANCH' exists.  Checking out..."
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
+          else
+            echo "🌿 Branch '$BRANCH' does not exist.  Creating new branch..."
+            git checkout -b "$BRANCH"
+          fi
+          
+          echo "📍 Current branch: $(git branch --show-current)"
 
       # ---------------------------------------------------------
       # 4️⃣ Create SFDC Project Structure
       # ---------------------------------------------------------
       - name:  Create SFDC Skeleton
-        run: |
+        run:  |
           echo "📦 Creating Salesforce project skeleton..."
           
-          PROJECT_NAME="${{ github.event. inputs.project_name }}"
-          API_VERSION="${{ github.event.inputs. api_version }}"
+          PROJECT_NAME="${{ github.event.inputs. project_name }}"
+          API_VERSION="${{ github.event.inputs.api_version }}"
           
           # Create directory structure
           mkdir -p force-app/main/default/classes
@@ -75,7 +89,7 @@ jobs:
           mkdir -p force-app/main/default/dashboards
           mkdir -p scripts/apex
           mkdir -p config
-          mkdir -p . vscode
+          mkdir -p .vscode
           
           echo "✅ Directory structure created"
 
@@ -111,7 +125,6 @@ jobs:
         run: |
           cat > .forceignore << 'EOF'
           # List files or directories below to ignore them when running force:source: push, force:source:pull, and force:source:status
-          # More information: https://developer.salesforce.com/docs/atlas. en-us. sfdx_dev.meta/sfdx_dev/sfdx_dev_exclude_source.htm
 
           package. xml
 
@@ -122,15 +135,8 @@ jobs:
           # LWC Jest
           **/__tests__/**
 
-          # Profiles (optional - uncomment if not tracking profiles)
-          # **/profiles/**
-
           # Admin Profile
           **/profiles/Admin.profile-meta.xml
-
-          # Standard Objects (optional - uncomment to ignore)
-          # **/objects/Account/**
-          # **/objects/Contact/**
 
           # Ignore specific metadata
           **/appMenus/**
@@ -141,14 +147,14 @@ jobs:
           echo "✅ . forceignore created"
 
       # ---------------------------------------------------------
-      # 7️⃣ Create .gitignore
+      # 7️⃣ Create . gitignore
       # ---------------------------------------------------------
-      - name:  Create .gitignore for SFDC
+      - name: Create . gitignore for SFDC
         run: |
           cat > .gitignore << 'EOF'
           # Salesforce
           .sf/
-          . sfdx/
+          .sfdx/
           . localdevserver/
 
           # LWC
@@ -173,7 +179,7 @@ jobs:
           package-lock.json
 
           # Auth files
-          authfile. txt
+          authfile.txt
           *.key
           *.crt
 
@@ -199,12 +205,7 @@ jobs:
               "**/node_modules":  true,
               "**/bower_components": true,
               "**/.sfdx": true,
-              "**/. sf": true
-            },
-            "files.associations": {
-              "*. cmp": "html",
-              "*. page": "html",
-              "*.component": "html"
+              "**/. sf":  true
             }
           }
           EOF
@@ -214,12 +215,7 @@ jobs:
             "recommendations":  [
               "salesforce.salesforcedx-vscode",
               "salesforce.salesforcedx-vscode-apex",
-              "salesforce.salesforcedx-vscode-apex-debugger",
-              "salesforce.salesforcedx-vscode-apex-replay-debugger",
-              "salesforce.salesforcedx-vscode-core",
-              "salesforce.salesforcedx-vscode-lightning",
               "salesforce.salesforcedx-vscode-lwc",
-              "salesforce.salesforcedx-vscode-visualforce",
               "redhat.vscode-xml"
             ]
           }
@@ -234,19 +230,13 @@ jobs:
         run: |
           API_VERSION="${{ github.event.inputs. api_version }}"
           
-          # Sample Apex Class
-          cat > force-app/main/default/classes/HelloWorld.cls << 'EOF'
+          # Only create if doesn't exist
+          if [ ! -f "force-app/main/default/classes/HelloWorld.cls" ]; then
+            cat > force-app/main/default/classes/HelloWorld.cls << 'EOF'
           /**
            * @description Sample Apex class
-           * @author GitHub Actions
            */
           public with sharing class HelloWorld {
-              
-              /**
-               * @description Returns a greeting message
-               * @param name The name to greet
-               * @return String greeting message
-               */
               public static String sayHello(String name) {
                   if (String.isBlank(name)) {
                       return 'Hello, World!';
@@ -255,54 +245,38 @@ jobs:
               }
           }
           EOF
-          
-          # Apex Class Metadata
-          cat > force-app/main/default/classes/HelloWorld.cls-meta.xml << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
+            
+            cat > force-app/main/default/classes/HelloWorld.cls-meta.xml << EOF
+          <? xml version="1.0" encoding="UTF-8"?>
           <ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
               <apiVersion>${API_VERSION}</apiVersion>
               <status>Active</status>
           </ApexClass>
           EOF
-          
-          # Sample Test Class
-          cat > force-app/main/default/classes/HelloWorldTest.cls << 'EOF'
-          /**
-           * @description Test class for HelloWorld
-           */
+            
+            cat > force-app/main/default/classes/HelloWorldTest.cls << 'EOF'
           @isTest
           private class HelloWorldTest {
-              
               @isTest
-              static void testSayHelloWithName() {
-                  String result = HelloWorld.sayHello('Salesforce');
-                  System.assertEquals('Hello, Salesforce!', result, 'Should greet with name');
-              }
-              
-              @isTest
-              static void testSayHelloWithoutName() {
-                  String result = HelloWorld.sayHello(null);
-                  System.assertEquals('Hello, World!', result, 'Should return default greeting');
-              }
-              
-              @isTest
-              static void testSayHelloWithBlankName() {
-                  String result = HelloWorld.sayHello('');
-                  System.assertEquals('Hello, World! ', result, 'Should return default greeting for blank');
+              static void testSayHello() {
+                  System.assertEquals('Hello, World!', HelloWorld.sayHello(null));
+                  System.assertEquals('Hello, Test!', HelloWorld. sayHello('Test'));
               }
           }
           EOF
-          
-          # Test Class Metadata
-          cat > force-app/main/default/classes/HelloWorldTest.cls-meta.xml << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
+            
+            cat > force-app/main/default/classes/HelloWorldTest. cls-meta.xml << EOF
+          <? xml version="1.0" encoding="UTF-8"?>
           <ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
               <apiVersion>${API_VERSION}</apiVersion>
               <status>Active</status>
           </ApexClass>
           EOF
-          
-          echo "✅ Sample Apex classes created"
+            
+            echo "✅ Sample Apex classes created"
+          else
+            echo "⏭️ HelloWorld.cls already exists, skipping..."
+          fi
 
       # ---------------------------------------------------------
       # 🔟 Create sample LWC
@@ -311,46 +285,39 @@ jobs:
         run: |
           API_VERSION="${{ github.event. inputs.api_version }}"
           
-          mkdir -p force-app/main/default/lwc/helloWorld
-          
-          # LWC HTML
-          cat > force-app/main/default/lwc/helloWorld/helloWorld.html << 'EOF'
+          # Only create if doesn't exist
+          if [ ! -d "force-app/main/default/lwc/helloWorld" ]; then
+            mkdir -p force-app/main/default/lwc/helloWorld
+            
+            cat > force-app/main/default/lwc/helloWorld/helloWorld.html << 'EOF'
           <template>
               <lightning-card title="Hello World" icon-name="custom: custom14">
                   <div class="slds-p-horizontal_small">
-                      <lightning-input 
-                          label="Enter your name" 
-                          value={name} 
-                          onchange={handleNameChange}>
-                      </lightning-input>
-                      <p class="slds-p-top_medium">
-                          <strong>{greeting}</strong>
-                      </p>
+                      <lightning-input label="Enter your name" value={name} onchange={handleNameChange}></lightning-input>
+                      <p class="slds-p-top_medium"><strong>{greeting}</strong></p>
                   </div>
               </lightning-card>
           </template>
           EOF
-          
-          # LWC JavaScript
-          cat > force-app/main/default/lwc/helloWorld/helloWorld.js << 'EOF'
+            
+            cat > force-app/main/default/lwc/helloWorld/helloWorld. js << 'EOF'
           import { LightningElement, track } from 'lwc';
 
           export default class HelloWorld extends LightningElement {
               @track name = '';
 
               get greeting() {
-                  return this.name ? `Hello, ${this.name}! ` : 'Hello, World!';
+                  return this.name ? `Hello, ${this.name}!` : 'Hello, World! ';
               }
 
               handleNameChange(event) {
-                  this.name = event. target.value;
+                  this.name = event.target.value;
               }
           }
           EOF
-          
-          # LWC Metadata
-          cat > force-app/main/default/lwc/helloWorld/helloWorld.js-meta.xml << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
+            
+            cat > force-app/main/default/lwc/helloWorld/helloWorld. js-meta.xml << EOF
+          <? xml version="1.0" encoding="UTF-8"?>
           <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
               <apiVersion>${API_VERSION}</apiVersion>
               <isExposed>true</isExposed>
@@ -361,8 +328,11 @@ jobs:
               </targets>
           </LightningComponentBundle>
           EOF
-          
-          echo "✅ Sample LWC created"
+            
+            echo "✅ Sample LWC created"
+          else
+            echo "⏭️ helloWorld LWC already exists, skipping..."
+          fi
 
       # ---------------------------------------------------------
       # 1️⃣1️⃣ Create README
@@ -377,83 +347,22 @@ jobs:
 
           Salesforce DX Project - API Version ${API_VERSION}
 
-          ## 📁 Project Structure
-
-          \`\`\`
-          ${PROJECT_NAME}/
-          ├── force-app/
-          │   └── main/
-          │       └── default/
-          │           ├── classes/          # Apex Classes
-          │           ├── triggers/         # Apex Triggers
-          │           ├── lwc/              # Lightning Web Components
-          │           ├── aura/             # Aura Components
-          │           ├── objects/          # Custom Objects & Fields
-          │           ├── layouts/          # Page Layouts
-          │           ├── flows/            # Flows
-          │           ├── permissionsets/   # Permission Sets
-          │           ├── profiles/         # Profiles
-          │           ├── staticresources/  # Static Resources
-          │           ├── tabs/             # Custom Tabs
-          │           ├── pages/            # Visualforce Pages
-          │           └── components/       # Visualforce Components
-          ├── scripts/
-          │   └── apex/                     # Anonymous Apex scripts
-          ├── config/                       # Configuration files
-          ├── . vscode/                      # VS Code settings
-          ├── sfdx-project. json            # SFDX Project configuration
-          ├── .forceignore                 # Files to ignore in SF operations
-          └── . gitignore                   # Git ignore file
-          \`\`\`
-
           ## 🚀 Getting Started
 
-          ### Prerequisites
-          - [Salesforce CLI](https://developer.salesforce.com/tools/sfdxcli)
-          - [VS Code](https://code.visualstudio. com/) with [Salesforce Extensions](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode)
-
-          ### Setup
-
-          1. **Clone the repository**
-             \`\`\`bash
-             git clone <repository-url>
-             cd ${PROJECT_NAME}
-             \`\`\`
-
-          2. **Authorize your Salesforce org**
+          1. **Authorize your org**
              \`\`\`bash
              sf org login web --alias myorg --set-default
              \`\`\`
 
-          3. **Deploy to your org**
+          2. **Deploy to your org**
              \`\`\`bash
              sf project deploy start --source-dir force-app --target-org myorg
              \`\`\`
 
-          4. **Retrieve from your org**
+          3. **Run tests**
              \`\`\`bash
-             sf project retrieve start --source-dir force-app --target-org myorg
+             sf apex run test --target-org myorg --test-level RunLocalTests
              \`\`\`
-
-          ## 🧪 Running Tests
-
-          \`\`\`bash
-          sf apex run test --target-org myorg --test-level RunLocalTests --code-coverage
-          \`\`\`
-
-          ## 📝 Useful Commands
-
-          | Command | Description |
-          |---------|-------------|
-          | \`sf org login web\` | Authorize an org |
-          | \`sf project deploy start\` | Deploy source to org |
-          | \`sf project retrieve start\` | Retrieve source from org |
-          | \`sf apex run test\` | Run Apex tests |
-          | \`sf org list\` | List authorized orgs |
-
-          ## 📄 License
-
-          This project is licensed under the MIT License. 
           EOF
           
           echo "✅ README. md created"
@@ -463,23 +372,18 @@ jobs:
       # ---------------------------------------------------------
       - name: Create placeholder files
         run: |
-          # Create . gitkeep files to preserve empty directories
           touch force-app/main/default/triggers/. gitkeep
           touch force-app/main/default/aura/.gitkeep
           touch force-app/main/default/objects/.gitkeep
           touch force-app/main/default/layouts/.gitkeep
-          touch force-app/main/default/flows/. gitkeep
+          touch force-app/main/default/flows/.gitkeep
           touch force-app/main/default/permissionsets/.gitkeep
-          touch force-app/main/default/profiles/.gitkeep
+          touch force-app/main/default/profiles/. gitkeep
           touch force-app/main/default/staticresources/.gitkeep
           touch force-app/main/default/tabs/.gitkeep
-          touch force-app/main/default/pages/.gitkeep
-          touch force-app/main/default/components/. gitkeep
-          touch force-app/main/default/email/.gitkeep
-          touch force-app/main/default/queues/.gitkeep
-          touch force-app/main/default/reports/.gitkeep
-          touch force-app/main/default/dashboards/.gitkeep
-          touch scripts/apex/.gitkeep
+          touch force-app/main/default/pages/. gitkeep
+          touch force-app/main/default/components/.gitkeep
+          touch scripts/apex/. gitkeep
           touch config/. gitkeep
           
           echo "✅ Placeholder files created"
@@ -489,44 +393,29 @@ jobs:
       # ---------------------------------------------------------
       - name:  Commit and Push
         run: |
-          git add . 
-          git commit -m "🎉 Initialize Salesforce DX project skeleton
+          BRANCH="${{ github. event.inputs.branch_name }}"
+          
+          # Check if there are changes to commit
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "ℹ️ No changes to commit.  Skeleton may already exist."
+          else
+            git add . 
+            git commit -m "🎉 Add Salesforce DX project skeleton
 
-          - Created SFDX project structure
-          - Added sfdx-project. json (API v${{ github.event. inputs.api_version }})
-          - Added .forceignore and .gitignore
-          - Added VS Code settings and extensions
-          - Added sample Apex class (HelloWorld) with tests
-          - Added sample LWC component (helloWorld)
-          - Added project README
+          - SFDX project structure
+          - API Version: ${{ github.event. inputs.api_version }}
+          - Sample Apex class and LWC
 
           Generated by GitHub Actions"
-          
-          git push origin ${{ github.event. inputs.branch_name }}
-          
-          echo ""
-          echo "════════════════════════════════════════"
-          echo "✅ SFDC Skeleton Created Successfully!"
-          echo "════════════════════════════════════════"
-          echo ""
-          echo "🌿 Branch: ${{ github. event.inputs.branch_name }}"
-          echo "📦 Project: ${{ github. event.inputs.project_name }}"
-          echo "🔢 API Version: ${{ github.event. inputs.api_version }}"
-          echo ""
-          echo "📂 Structure created:"
-          echo "   ├── force-app/main/default/"
-          echo "   │   ├── classes/ (with HelloWorld sample)"
-          echo "   │   ├── lwc/ (with helloWorld sample)"
-          echo "   │   ├── triggers/"
-          echo "   │   ├── aura/"
-          echo "   │   ├── objects/"
-          echo "   │   ├── layouts/"
-          echo "   │   ├── flows/"
-          echo "   │   ├── permissionsets/"
-          echo "   │   └── ...  more"
-          echo "   ├── sfdx-project. json"
-          echo "   ├── .forceignore"
-          echo "   ├── .gitignore"
-          echo "   └── README.md"
-          echo ""
-          echo "════════════════════════════════════════"
+            
+            git push origin "$BRANCH"
+            
+            echo ""
+            echo "════════════════════════════════════════"
+            echo "✅ SFDC Skeleton Created Successfully!"
+            echo "════════════════════════════════════════"
+            echo "🌿 Branch: $BRANCH"
+            echo "📦 Project: ${{ github.event.inputs.project_name }}"
+            echo "🔢 API Version: ${{ github.event. inputs.api_version }}"
+            echo "════════════════════════════════════════"
+          fi
