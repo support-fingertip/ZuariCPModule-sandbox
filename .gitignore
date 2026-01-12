@@ -1,0 +1,11 @@
+# SFDX / Salesforce ignores
+.sfdx
+.forceignore
+node_modules
+*.log
+.DS_Store
+.vscode
+.idea
+coverage
+*.class
+*.zip

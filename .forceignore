@@ -1,0 +1,6 @@
+# files and folders to ignore for force:source:push/pull and mdapi deploy/retrieve
+node_modules/
+.sfdx/
+coverage/
+*.log
+.DS_Store

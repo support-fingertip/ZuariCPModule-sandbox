@@ -1,0 +1,4 @@
+{
+  "salesforcedx-vscode-core.retrieve-test-code-coverage": true,
+  "editor.formatOnSave": true
+}
