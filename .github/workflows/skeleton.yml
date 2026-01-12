@@ -104,7 +104,8 @@ jobs:
           API_VERSION="${{ github.event.inputs.api_version }}"
           PROJECT_NAME="${{ github.event.inputs.project_name }}"
           
-          cat > sfdx-project.json << EOF
+          if [ ! -f "sfdx-project.json" ]; then
+            cat > sfdx-project.json << EOF
           {
             "packageDirectories": [
               {
@@ -118,15 +119,18 @@ jobs:
             "sourceApiVersion": "${API_VERSION}"
           }
           EOF
-          
-          echo "✅ sfdx-project.json created"
+            echo "✅ sfdx-project.json created"
+          else
+            echo "⏭️ sfdx-project.json already exists, skipping..."
+          fi
 
       # ---------------------------------------------------------
       # 6️⃣ Create .forceignore
       # ---------------------------------------------------------
       - name: Create .forceignore
         run: |
-          cat > .forceignore << 'EOF'
+          if [ ! -f ".forceignore" ]; then
+            cat > .forceignore << 'EOF'
           # List files or directories below to ignore them when running force:source:push, force:source:pull, and force:source:status
 
           package.xml
@@ -146,15 +150,18 @@ jobs:
           **/objectTranslations/**
           **/connectedApps/**
           EOF
-          
-          echo "✅ .forceignore created"
+            echo "✅ .forceignore created"
+          else
+            echo "⏭️ .forceignore already exists, skipping..."
+          fi
 
       # ---------------------------------------------------------
       # 7️⃣ Create .gitignore
       # ---------------------------------------------------------
       - name: Create .gitignore for SFDC
         run: |
-          cat > .gitignore << 'EOF'
+          if [ ! -f ".gitignore" ]; then
+            cat > .gitignore << 'EOF'
           # Salesforce
           .sf/
           .sfdx/
@@ -191,8 +198,10 @@ jobs:
           changed-files.txt
           delta-package/
           EOF
-          
-          echo "✅ .gitignore updated"
+            echo "✅ .gitignore created"
+          else
+            echo "⏭️ .gitignore already exists, skipping..."
+          fi
 
       # ---------------------------------------------------------
       # 8️⃣ Create VS Code settings
@@ -483,7 +492,7 @@ jobs:
           echo "✅ README.md created"
 
       # ---------------------------------------------------------
-      # 1️⃣2️⃣ Create placeholder files
+      # 1️⃣3️⃣ Create placeholder files
       # ---------------------------------------------------------
       - name: Create placeholder files
         run: |
@@ -504,7 +513,7 @@ jobs:
           echo "✅ Placeholder files created"
 
       # ---------------------------------------------------------
-      # 1️⃣3️⃣ Commit and Push
+      # 1️⃣4️⃣ Commit and Push
       # ---------------------------------------------------------
       - name: Commit and Push
         run: |
