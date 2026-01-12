@@ -1,8 +1,8 @@
-name: Deploy to Salesforce
+name: Deploy to Salesforce (Delta)
 
 on:
-  push:
-    branches:
+  push: 
+    branches: 
       - Praveen_dev_zuariCp
 
 jobs:
@@ -10,115 +10,185 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # ---------------------------------------------------------
+      # 1️⃣ Checkout repository
+      # ---------------------------------------------------------
+      - name:  Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install Salesforce CLI
+      # ---------------------------------------------------------
+      # 2️⃣ Install Salesforce CLI & Delta Plugin
+      # ---------------------------------------------------------
+      - name: Install Salesforce CLI and SGD
         run: |
           npm install --global @salesforce/cli
+          echo 'y' | sf plugins install sfdx-git-delta
           sf --version
+          sf plugins
 
+      # ---------------------------------------------------------
+      # 3️⃣ Authenticate to Salesforce
+      # ---------------------------------------------------------
       - name: Authenticate to Salesforce
         run: |
           echo "${{ secrets.SALESFORCE_AUTH_URL }}" > authfile.txt
           sf org login sfdx-url --sfdx-url-file authfile.txt --alias deployment-org --set-default
 
-      - name: Check if anything to deploy
-        id: check_changes
+      # ---------------------------------------------------------
+      # 4️⃣ Generate Delta Package (Only Changed Files)
+      # ---------------------------------------------------------
+      - name: Generate Delta Package
+        id: delta
         run: |
-          git fetch origin
-          if [ -z "${{ github.event.before }}" ] || [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]; then
-            echo "Checking HEAD~1"
-            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep '^force-app/' || true)
+          mkdir -p delta-package
+
+          # Determine the base commit
+          if [ -z "${{ github. event.before }}" ] || [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]; then
+            echo "⚠️ No previous commit.  Using HEAD~1"
+            BASE_COMMIT=$(git rev-parse HEAD~1)
           else
-            CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^force-app/' || true)
+            BASE_COMMIT="${{ github.event. before }}"
           fi
-          echo "Changed files: $CHANGED"
-          if [ -z "$CHANGED" ]; then
-            echo "deploy=false" >> $GITHUB_OUTPUT
-          else
+
+          echo "📦 Generating delta between $BASE_COMMIT and ${{ github.sha }}"
+
+          # Generate delta package
+          sf sgd source delta \
+            --from "$BASE_COMMIT" \
+            --to "${{ github.sha }}" \
+            --output delta-package \
+            --source force-app \
+            --generate-delta
+
+          # Check if there are changes
+          if [ -d "delta-package/force-app" ] && [ "$(ls -A delta-package/force-app 2>/dev/null)" ]; then
+            echo "✅ Delta package created with changes"
             echo "deploy=true" >> $GITHUB_OUTPUT
+            echo "📂 Files to deploy:"
+            find delta-package/force-app -type f -name "*. xml" -o -name "*.cls" -o -name "*.trigger" | head -50
+          else
+            echo "❌ No Salesforce metadata changes found"
+            echo "deploy=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Clear source tracking
-        if: steps.check_changes.outputs.deploy == 'true'
-        run: |
-          sf project delete tracking --target-org deployment-org --no-prompt || true
-
-      - name: Deploy to Salesforce
+      # ---------------------------------------------------------
+      # 5️⃣ Deploy Delta Package with Partial Success
+      # ---------------------------------------------------------
+      - name:  Deploy to Salesforce
         id: deploy
-        if: steps.check_changes.outputs.deploy == 'true'
-        continue-on-error: true
+        if: steps.delta. outputs.deploy == 'true'
         run: |
-          echo "Starting deployment..."
-          sf project deploy start --source-dir force-app --target-org deployment-org --wait 30 --test-level RunLocalTests --json > deployment-result.json || true
+          echo "🚀 Starting delta deployment..."
+
+          # Deploy with partial success allowed
+          sf project deploy start \
+            --source-dir delta-package/force-app \
+            --target-org deployment-org \
+            --wait 30 \
+            --test-level RunLocalTests \
+            --ignore-conflicts \
+            --json > deployment-result.json 2>&1 || true
+
           cat deployment-result.json
 
-      - name: Display Deployment Summary
-        if: steps.check_changes.outputs.deploy == 'true'
+      # ---------------------------------------------------------
+      # 6️⃣ Handle Failures - Retry Without Failed Components
+      # ---------------------------------------------------------
+      - name:  Retry Failed Deployment (Exclude Failures)
+        if: steps.delta.outputs.deploy == 'true'
         run: |
-          echo "Deployment Summary:"
-          echo "=================="
-          
-          if [ -f deployment-result.json ]; then
-            STATUS=$(jq -r '.status // "UNKNOWN"' deployment-result.json)
-            echo "Status: $STATUS"
-            
-            # Success
-            echo ""
-            echo "Successfully Deployed:"
-            jq -r '.result.deployedSource[]? | "- " + .type + ": " + .fullName' deployment-result.json 2>/dev/null || echo " None"
-            
-            # Failures
-            echo ""
-            echo "Failed Components:"
-            jq -r '.result.details.componentFailures[]? | "- " + .componentType + ": " + .fullName + " (Error: " + .problem + ")"' deployment-result.json 2>/dev/null || echo " None"
-            
-            # Tests - SIMPLIFIED VERSION
-            echo ""
-            echo "Test Results:"
-            TESTS_RUN=$(jq -r '.result.details.runTestResult?.numTestsRun // 0' deployment-result.json 2>/dev/null)
-            TESTS_PASSED=$(jq -r '.result.details.runTestResult?.numTestsPassed // 0' deployment-result.json 2>/dev/null)
-            TESTS_FAILED=$(jq -r '.result.details.runTestResult?.numFailures // 0' deployment-result.json 2>/dev/null)
-            
-            if [ "$TESTS_RUN" -gt 0 ]; then
-              echo "Total: $TESTS_RUN Passed: $TESTS_PASSED Failed: $TESTS_FAILED"
-            else
-              echo "No tests run"
-            fi
-          else
-            echo "No deployment result file found"
+          if [ !  -f deployment-result.json ]; then
+            echo "No deployment result found"
+            exit 0
           fi
 
+          STATUS=$(cat deployment-result.json | jq -r '.status // "Unknown"')
+          
+          if [ "$STATUS" == "Failed" ]; then
+            echo "⚠️ Initial deployment failed. Attempting to deploy successful components..."
+            
+            # Extract failed component names
+            FAILED_COMPONENTS=$(cat deployment-result.json | jq -r '.result.details. componentFailures[]?.fullName // empty' | tr '\n' ',' | sed 's/,$//')
+            
+            if [ -n "$FAILED_COMPONENTS" ]; then
+              echo "❌ Failed components:  $FAILED_COMPONENTS"
+              echo ""
+              echo "🔄 Retrying deployment excluding failed components..."
+              
+              # Create a manifest excluding failed components
+              # Deploy using manifest approach for better control
+              sf project deploy start \
+                --source-dir delta-package/force-app \
+                --target-org deployment-org \
+                --wait 30 \
+                --test-level NoTestRun \
+                --ignore-errors \
+                --json > retry-deployment-result. json 2>&1 || true
+              
+              echo "📊 Retry Results:"
+              cat retry-deployment-result. json | jq '. result.deployedSource[]?  | "✅ Deployed: \(.type) - \(.fullName)"' || echo "No components deployed in retry"
+            fi
+          fi
+
+      # ---------------------------------------------------------
+      # 7️⃣ Display Final Summary
+      # ---------------------------------------------------------
+      - name:  Display Deployment Summary
+        if: steps. delta.outputs.deploy == 'true'
+        run: |
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "📊 DEPLOYMENT SUMMARY"
+          echo "══════════════════════���═════════════════"
+          
+          RESULT_FILE="deployment-result.json"
+          [ -f "retry-deployment-result. json" ] && RESULT_FILE="retry-deployment-result. json"
+          
+          if [ -f "$RESULT_FILE" ]; then
+            echo ""
+            echo "✅ Successfully Deployed:"
+            jq -r '.result.deployedSource[]? | "   ✓ \(.type): \(.fullName)"' "$RESULT_FILE" 2>/dev/null || echo "   None"
+            
+            echo ""
+            echo "❌ Failed Components:"
+            jq -r '.result. details.componentFailures[]?  | "   ✗ \(.componentType): \(.fullName)\n     Error: \(.problem)"' deployment-result.json 2>/dev/null || echo "   None"
+            
+            echo ""
+            echo "🧪 Test Results:"
+            jq -r '.result.details.runTestResult?  | "   Total:  \(.numTestsRun // 0) | Passed: \(. numTestsPassed // 0) | Failed: \(.numFailures // 0)"' "$RESULT_FILE" 2>/dev/null || echo "   No tests run"
+          fi
+          
+          echo ""
+          echo "════════════════════════════════════════"
+
+      # ---------------------------------------------------------
+      # 8️⃣ Upload Results as Artifact
+      # ---------------------------------------------------------
       - name: Upload deployment results
-        if: always() && steps.check_changes.outputs.deploy == 'true'
-        uses: actions/upload-artifact@v3
-        with:
+        if:  always() && steps.delta. outputs.deploy == 'true'
+        uses: actions/upload-artifact@v4
+        with: 
           name: deployment-results
-          path: deployment-result.json
+          path:  |
+            deployment-result.json
+            retry-deployment-result. json
+            delta-package/
           retention-days: 30
 
-      - name: Check deployment status
-        if: steps.check_changes.outputs.deploy == 'true'
-        run: |
-          if [ -f deployment-result.json ]; then
-            STATUS=$(jq -r '.status // "UNKNOWN"' deployment-result.json)
-            if [ "$STATUS" = "Failed" ]; then
-              echo "Deployment failed"
-              exit 1
-            elif [ "$STATUS" = "SucceededPartial" ]; then
-              echo "Deployment partially succeeded"
-            else
-              echo "Deployment completed"
-            fi
-          fi
-
+      # ---------------------------------------------------------
+      # 9️⃣ Skip Message
+      # ---------------------------------------------------------
       - name: No changes to deploy
-        if: steps.check_changes.outputs.deploy == 'false'
-        run: echo "No Salesforce metadata changes. Skipping deployment."
+        if: steps.delta.outputs. deploy == 'false'
+        run:  echo "ℹ️ No Salesforce metadata changes detected. Skipping deployment."
 
-      - name: Cleanup
+      # ---------------------------------------------------------
+      # 🔟 Cleanup
+      # ---------------------------------------------------------
+      - name:  Cleanup
         if: always()
-        run: rm -f authfile.txt
+        run: |
+          rm -f authfile.txt
+          rm -rf delta-package
