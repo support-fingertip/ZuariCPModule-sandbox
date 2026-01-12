@@ -1,59 +1,59 @@
 name: Create SFDC Project Skeleton
 
-on:  
-  workflow_dispatch:  
-    inputs: 
-      branch_name: 
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
         description: 'Branch name for the SFDC skeleton (new or existing)'
         required: true
         default: 'sfdc-project'
-      project_name:  
-        description:  'Salesforce project name'
+      project_name:
+        description: 'Salesforce project name'
         required: true
         default: 'my-sfdc-project'
-      api_version: 
+      api_version:
         description: 'Salesforce API version'
         required: true
         default: '59.0'
 
-jobs: 
-  create-skeleton: 
+jobs:
+  create-skeleton:
     runs-on: ubuntu-latest
     
-    steps: 
+    steps:
       # ---------------------------------------------------------
       # 1️⃣ Checkout repository
       # ---------------------------------------------------------
-      - name:  Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
-        with: 
-          fetch-depth:  0
+        with:
+          fetch-depth: 0
 
       # ---------------------------------------------------------
       # 2️⃣ Configure Git
       # ---------------------------------------------------------
-      - name:  Configure Git
+      - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply. github.com"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       # ---------------------------------------------------------
       # 3️⃣ Checkout branch (existing or new)
       # ---------------------------------------------------------
       - name: Checkout branch
         run: |
-          BRANCH="${{ github.event.inputs. branch_name }}"
+          BRANCH="${{ github.event.inputs.branch_name }}"
           
           # Fetch all remote branches
           git fetch origin
           
           # Check if branch exists remotely
           if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-            echo "✅ Branch '$BRANCH' exists.  Checking out..."
+            echo "✅ Branch '$BRANCH' exists. Checking out..."
             git checkout "$BRANCH"
             git pull origin "$BRANCH"
           else
-            echo "🌿 Branch '$BRANCH' does not exist.  Creating new branch..."
+            echo "🌿 Branch '$BRANCH' does not exist. Creating new branch..."
             git checkout -b "$BRANCH"
           fi
           
@@ -62,11 +62,11 @@ jobs:
       # ---------------------------------------------------------
       # 4️⃣ Create SFDC Project Structure
       # ---------------------------------------------------------
-      - name:  Create SFDC Skeleton
-        run:  |
+      - name: Create SFDC Skeleton
+        run: |
           echo "📦 Creating Salesforce project skeleton..."
           
-          PROJECT_NAME="${{ github.event.inputs. project_name }}"
+          PROJECT_NAME="${{ github.event.inputs.project_name }}"
           API_VERSION="${{ github.event.inputs.api_version }}"
           
           # Create directory structure
@@ -94,14 +94,14 @@ jobs:
           echo "✅ Directory structure created"
 
       # ---------------------------------------------------------
-      # 5️⃣ Create sfdx-project. json
+      # 5️⃣ Create sfdx-project.json
       # ---------------------------------------------------------
       - name: Create sfdx-project.json
         run: |
-          API_VERSION="${{ github.event.inputs. api_version }}"
-          PROJECT_NAME="${{ github.event.inputs. project_name }}"
+          API_VERSION="${{ github.event.inputs.api_version }}"
+          PROJECT_NAME="${{ github.event.inputs.project_name }}"
           
-          cat > sfdx-project. json << EOF
+          cat > sfdx-project.json << EOF
           {
             "packageDirectories": [
               {
@@ -111,7 +111,7 @@ jobs:
             ],
             "name": "${PROJECT_NAME}",
             "namespace": "",
-            "sfdcLoginUrl": "https://login.salesforce. com",
+            "sfdcLoginUrl": "https://login.salesforce.com",
             "sourceApiVersion": "${API_VERSION}"
           }
           EOF
@@ -124,13 +124,13 @@ jobs:
       - name: Create .forceignore
         run: |
           cat > .forceignore << 'EOF'
-          # List files or directories below to ignore them when running force:source: push, force:source:pull, and force:source:status
+          # List files or directories below to ignore them when running force:source:push, force:source:pull, and force:source:status
 
-          package. xml
+          package.xml
 
           # LWC configuration files
           **/jsconfig.json
-          **/. eslintrc.json
+          **/.eslintrc.json
 
           # LWC Jest
           **/__tests__/**
@@ -144,22 +144,22 @@ jobs:
           **/connectedApps/**
           EOF
           
-          echo "✅ . forceignore created"
+          echo "✅ .forceignore created"
 
       # ---------------------------------------------------------
-      # 7️⃣ Create . gitignore
+      # 7️⃣ Create .gitignore
       # ---------------------------------------------------------
-      - name: Create . gitignore for SFDC
+      - name: Create .gitignore for SFDC
         run: |
           cat > .gitignore << 'EOF'
           # Salesforce
           .sf/
           .sfdx/
-          . localdevserver/
+          .localdevserver/
 
           # LWC
-          **/lwc/**/*. css. map
-          **/lwc/**/*.js. map
+          **/lwc/**/*.css.map
+          **/lwc/**/*.js.map
 
           # Logs
           *.log
@@ -189,30 +189,30 @@ jobs:
           delta-package/
           EOF
           
-          echo "✅ . gitignore updated"
+          echo "✅ .gitignore updated"
 
       # ---------------------------------------------------------
       # 8️⃣ Create VS Code settings
       # ---------------------------------------------------------
       - name: Create VS Code settings
-        run:  |
+        run: |
           cat > .vscode/settings.json << 'EOF'
           {
             "editor.formatOnSave": true,
             "editor.tabSize": 4,
-            "salesforcedx-vscode-apex. java.home": "",
+            "salesforcedx-vscode-apex.java.home": "",
             "search.exclude": {
-              "**/node_modules":  true,
+              "**/node_modules": true,
               "**/bower_components": true,
               "**/.sfdx": true,
-              "**/. sf":  true
+              "**/.sf": true
             }
           }
           EOF
           
           cat > .vscode/extensions.json << 'EOF'
           {
-            "recommendations":  [
+            "recommendations": [
               "salesforce.salesforcedx-vscode",
               "salesforce.salesforcedx-vscode-apex",
               "salesforce.salesforcedx-vscode-lwc",
@@ -226,9 +226,9 @@ jobs:
       # ---------------------------------------------------------
       # 9️⃣ Create sample Apex class
       # ---------------------------------------------------------
-      - name:  Create sample Apex class
+      - name: Create sample Apex class
         run: |
-          API_VERSION="${{ github.event.inputs. api_version }}"
+          API_VERSION="${{ github.event.inputs.api_version }}"
           
           # Only create if doesn't exist
           if [ ! -f "force-app/main/default/classes/HelloWorld.cls" ]; then
@@ -247,7 +247,7 @@ jobs:
           EOF
             
             cat > force-app/main/default/classes/HelloWorld.cls-meta.xml << EOF
-          <? xml version="1.0" encoding="UTF-8"?>
+          <?xml version="1.0" encoding="UTF-8"?>
           <ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
               <apiVersion>${API_VERSION}</apiVersion>
               <status>Active</status>
@@ -260,13 +260,13 @@ jobs:
               @isTest
               static void testSayHello() {
                   System.assertEquals('Hello, World!', HelloWorld.sayHello(null));
-                  System.assertEquals('Hello, Test!', HelloWorld. sayHello('Test'));
+                  System.assertEquals('Hello, Test!', HelloWorld.sayHello('Test'));
               }
           }
           EOF
             
-            cat > force-app/main/default/classes/HelloWorldTest. cls-meta.xml << EOF
-          <? xml version="1.0" encoding="UTF-8"?>
+            cat > force-app/main/default/classes/HelloWorldTest.cls-meta.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
           <ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
               <apiVersion>${API_VERSION}</apiVersion>
               <status>Active</status>
@@ -283,7 +283,7 @@ jobs:
       # ---------------------------------------------------------
       - name: Create sample LWC
         run: |
-          API_VERSION="${{ github.event. inputs.api_version }}"
+          API_VERSION="${{ github.event.inputs.api_version }}"
           
           # Only create if doesn't exist
           if [ ! -d "force-app/main/default/lwc/helloWorld" ]; then
@@ -291,7 +291,7 @@ jobs:
             
             cat > force-app/main/default/lwc/helloWorld/helloWorld.html << 'EOF'
           <template>
-              <lightning-card title="Hello World" icon-name="custom: custom14">
+              <lightning-card title="Hello World" icon-name="custom:custom14">
                   <div class="slds-p-horizontal_small">
                       <lightning-input label="Enter your name" value={name} onchange={handleNameChange}></lightning-input>
                       <p class="slds-p-top_medium"><strong>{greeting}</strong></p>
@@ -300,14 +300,14 @@ jobs:
           </template>
           EOF
             
-            cat > force-app/main/default/lwc/helloWorld/helloWorld. js << 'EOF'
+            cat > force-app/main/default/lwc/helloWorld/helloWorld.js << 'EOF'
           import { LightningElement, track } from 'lwc';
 
           export default class HelloWorld extends LightningElement {
               @track name = '';
 
               get greeting() {
-                  return this.name ? `Hello, ${this.name}!` : 'Hello, World! ';
+                  return this.name ? `Hello, ${this.name}!` : 'Hello, World!';
               }
 
               handleNameChange(event) {
@@ -316,8 +316,8 @@ jobs:
           }
           EOF
             
-            cat > force-app/main/default/lwc/helloWorld/helloWorld. js-meta.xml << EOF
-          <? xml version="1.0" encoding="UTF-8"?>
+            cat > force-app/main/default/lwc/helloWorld/helloWorld.js-meta.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
           <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
               <apiVersion>${API_VERSION}</apiVersion>
               <isExposed>true</isExposed>
@@ -339,7 +339,7 @@ jobs:
       # ---------------------------------------------------------
       - name: Create README
         run: |
-          PROJECT_NAME="${{ github.event.inputs. project_name }}"
+          PROJECT_NAME="${{ github.event.inputs.project_name }}"
           API_VERSION="${{ github.event.inputs.api_version }}"
           
           cat > README.md << EOF
@@ -363,47 +363,57 @@ jobs:
              \`\`\`bash
              sf apex run test --target-org myorg --test-level RunLocalTests
              \`\`\`
+
+          ## 📁 Project Structure
+
+          - \`force-app/\` - Main source directory
+          - \`scripts/\` - Utility scripts
+          - \`config/\` - Configuration files
+
+          ## 🛠️ Development
+
+          This project was generated using GitHub Actions workflow.
           EOF
           
-          echo "✅ README. md created"
+          echo "✅ README.md created"
 
       # ---------------------------------------------------------
       # 1️⃣2️⃣ Create placeholder files
       # ---------------------------------------------------------
       - name: Create placeholder files
         run: |
-          touch force-app/main/default/triggers/. gitkeep
+          touch force-app/main/default/triggers/.gitkeep
           touch force-app/main/default/aura/.gitkeep
           touch force-app/main/default/objects/.gitkeep
           touch force-app/main/default/layouts/.gitkeep
           touch force-app/main/default/flows/.gitkeep
           touch force-app/main/default/permissionsets/.gitkeep
-          touch force-app/main/default/profiles/. gitkeep
+          touch force-app/main/default/profiles/.gitkeep
           touch force-app/main/default/staticresources/.gitkeep
           touch force-app/main/default/tabs/.gitkeep
-          touch force-app/main/default/pages/. gitkeep
+          touch force-app/main/default/pages/.gitkeep
           touch force-app/main/default/components/.gitkeep
-          touch scripts/apex/. gitkeep
-          touch config/. gitkeep
+          touch scripts/apex/.gitkeep
+          touch config/.gitkeep
           
           echo "✅ Placeholder files created"
 
       # ---------------------------------------------------------
       # 1️⃣3️⃣ Commit and Push
       # ---------------------------------------------------------
-      - name:  Commit and Push
+      - name: Commit and Push
         run: |
-          BRANCH="${{ github. event.inputs.branch_name }}"
+          BRANCH="${{ github.event.inputs.branch_name }}"
           
           # Check if there are changes to commit
           if git diff --quiet && git diff --staged --quiet; then
-            echo "ℹ️ No changes to commit.  Skeleton may already exist."
+            echo "ℹ️ No changes to commit. Skeleton may already exist."
           else
-            git add . 
+            git add .
             git commit -m "🎉 Add Salesforce DX project skeleton
 
           - SFDX project structure
-          - API Version: ${{ github.event. inputs.api_version }}
+          - API Version: ${{ github.event.inputs.api_version }}
           - Sample Apex class and LWC
 
           Generated by GitHub Actions"
@@ -416,6 +426,6 @@ jobs:
             echo "════════════════════════════════════════"
             echo "🌿 Branch: $BRANCH"
             echo "📦 Project: ${{ github.event.inputs.project_name }}"
-            echo "🔢 API Version: ${{ github.event. inputs.api_version }}"
+            echo "🔢 API Version: ${{ github.event.inputs.api_version }}"
             echo "════════════════════════════════════════"
           fi
