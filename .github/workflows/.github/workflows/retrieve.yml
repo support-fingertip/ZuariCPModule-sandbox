@@ -1,0 +1,43 @@
+name: Retrieve from Salesforce
+
+on:
+  workflow_dispatch:
+
+jobs:
+  retrieve:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+          sf --version
+      
+      - name: Authenticate to Salesforce
+        run: |
+          echo "${{ secrets.SALESFORCE_AUTH_URL }}" > authfile.txt
+          sf org login sfdx-url --sfdx-url-file authfile.txt --alias deployment-org --set-default
+      
+      - name: Retrieve from Salesforce
+        run: |
+          sf project retrieve start --manifest manifest/package.xml --target-org deployment-org
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Retrieved changes from Salesforce"
+          branch: salesforce-retrieve-${{ github.run_number }}
+          delete-branch: true
+          title: "🔄 Salesforce Metadata Retrieval"
+          body: |
+            Automated retrieval from Salesforce
+          labels: salesforce
