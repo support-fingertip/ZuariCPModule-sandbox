@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Secondary_source__c</fullName>
+    <label>Secondary source</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Real Estate Portals</fullName>
+                <default>false</default>
+                <label>Real Estate Portals</label>
+            </value>
+            <value>
+                <fullName>Social Media</fullName>
+                <default>false</default>
+                <label>Social Media</label>
+            </value>
+            <value>
+                <fullName>Google Ads</fullName>
+                <default>false</default>
+                <label>Google Ads</label>
+            </value>
+            <value>
+                <fullName>Website</fullName>
+                <default>false</default>
+                <label>Website</label>
+            </value>
+            <value>
+                <fullName>Loyalty</fullName>
+                <default>false</default>
+                <label>Loyalty</label>
+            </value>
+            <value>
+                <fullName>Employe Referral</fullName>
+                <default>false</default>
+                <label>Employe Referral</label>
+            </value>
+            <value>
+                <fullName>NA</fullName>
+                <default>false</default>
+                <label>NA</label>
+            </value>
+            <value>
+                <fullName>Customer Referral</fullName>
+                <default>false</default>
+                <label>Customer Referral</label>
+            </value>
+            <value>
+                <fullName>Google Demandgen</fullName>
+                <default>false</default>
+                <label>Google Demandgen</label>
+            </value>
+            <value>
+                <fullName>Facebook</fullName>
+                <default>false</default>
+                <label>Facebook</label>
+            </value>
+            <value>
+                <fullName>Facebook CTW</fullName>
+                <default>false</default>
+                <label>Facebook CTW</label>
+            </value>
+            <value>
+                <fullName>Taboola</fullName>
+                <default>false</default>
+                <label>Taboola</label>
+            </value>
+            <value>
+                <fullName>Channel Partner</fullName>
+                <default>false</default>
+                <label>Channel Partner</label>
+            </value>
+            <value>
+                <fullName>Google Search</fullName>
+                <default>false</default>
+                <label>Google Search</label>
+            </value>
+            <value>
+                <fullName>FacebookLG</fullName>
+                <default>false</default>
+                <label>FacebookLG</label>
+            </value>
+            <value>
+                <fullName>Google Adwords</fullName>
+                <default>false</default>
+                <label>Google Adwords</label>
+            </value>
+            <value>
+                <fullName>Landing Page</fullName>
+                <default>false</default>
+                <label>Landing Page</label>
+            </value>
+            <value>
+                <fullName>Portal Listing</fullName>
+                <default>false</default>
+                <label>Portal Listing</label>
+            </value>
+            <value>
+                <fullName>RWA Activity</fullName>
+                <default>false</default>
+                <label>RWA Activity</label>
+            </value>
+            <value>
+                <fullName>SMS Campaign</fullName>
+                <default>false</default>
+                <label>SMS Campaign</label>
+            </value>
+            <value>
+                <fullName>Doctor HNI</fullName>
+                <default>false</default>
+                <label>Doctor HNI</label>
+            </value>
+            <value>
+                <fullName>GCC Calling</fullName>
+                <default>false</default>
+                <label>GCC Calling</label>
+            </value>
+            <value>
+                <fullName>HNI Database</fullName>
+                <default>false</default>
+                <label>HNI Database</label>
+            </value>
+            <value>
+                <fullName>Singapore-HNI Data</fullName>
+                <default>false</default>
+                <label>Singapore-HNI Data</label>
+            </value>
+            <value>
+                <fullName>Somerset HNI</fullName>
+                <default>false</default>
+                <label>Somerset HNI</label>
+            </value>
+            <value>
+                <fullName>Booking Engine</fullName>
+                <default>false</default>
+                <label>Booking Engine</label>
+            </value>
+            <value>
+                <fullName>Brand Awareness</fullName>
+                <default>false</default>
+                <label>Brand Awareness</label>
+            </value>
+            <value>
+                <fullName>Cxi Call</fullName>
+                <default>false</default>
+                <label>Cxi Call</label>
+            </value>
+            <value>
+                <fullName>Database</fullName>
+                <default>false</default>
+                <label>Database</label>
+            </value>
+            <value>
+                <fullName>EDM Campaign</fullName>
+                <default>false</default>
+                <label>EDM Campaign</label>
+            </value>
+            <value>
+                <fullName>Google my Business</fullName>
+                <default>false</default>
+                <label>Google my Business</label>
+            </value>
+            <value>
+                <fullName>Linkedin Ads</fullName>
+                <default>false</default>
+                <label>Linkedin Ads</label>
+            </value>
+            <value>
+                <fullName>Mailers</fullName>
+                <default>false</default>
+                <label>Mailers</label>
+            </value>
+            <value>
+                <fullName>My Gate</fullName>
+                <default>false</default>
+                <label>My Gate</label>
+            </value>
+            <value>
+                <fullName>My Pink Home</fullName>
+                <default>false</default>
+                <label>My Pink Home</label>
+            </value>
+            <value>
+                <fullName>Native Ads</fullName>
+                <default>false</default>
+                <label>Native Ads</label>
+            </value>
+            <value>
+                <fullName>Netcore</fullName>
+                <default>false</default>
+                <label>Netcore</label>
+            </value>
+            <value>
+                <fullName>Programmatic</fullName>
+                <default>false</default>
+                <label>Programmatic</label>
+            </value>
+            <value>
+                <fullName>Publishers</fullName>
+                <default>false</default>
+                <label>Publishers</label>
+            </value>
+            <value>
+                <fullName>RCS Campaign</fullName>
+                <default>false</default>
+                <label>RCS Campaign</label>
+            </value>
+            <value>
+                <fullName>Revspots</fullName>
+                <default>false</default>
+                <label>Revspots</label>
+            </value>
+            <value>
+                <fullName>Social Media Video</fullName>
+                <default>false</default>
+                <label>Social Media Video</label>
+            </value>
+            <value>
+                <fullName>Times of India</fullName>
+                <default>false</default>
+                <label>Times of India</label>
+            </value>
+            <value>
+                <fullName>WhatsApp Campaign</fullName>
+                <default>false</default>
+                <label>WhatsApp Campaign</label>
+            </value>
+            <value>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+                <label>Youtube</label>
+            </value>
+            <value>
+                <fullName>Flyer Distribution</fullName>
+                <default>false</default>
+                <label>Flyer Distribution</label>
+            </value>
+            <value>
+                <fullName>Flyers/Inserts</fullName>
+                <default>false</default>
+                <label>Flyers/Inserts</label>
+            </value>
+            <value>
+                <fullName>International Exhibition</fullName>
+                <default>false</default>
+                <label>International Exhibition</label>
+            </value>
+            <value>
+                <fullName>WhatsApp</fullName>
+                <default>false</default>
+                <label>WhatsApp</label>
+            </value>
+            <value>
+                <fullName>Airport Activity</fullName>
+                <default>false</default>
+                <label>Airport Activity</label>
+            </value>
+            <value>
+                <fullName>Apartment Activity</fullName>
+                <default>false</default>
+                <label>Apartment Activity</label>
+            </value>
+            <value>
+                <fullName>Bank of Baroda</fullName>
+                <default>false</default>
+                <label>Bank of Baroda</label>
+            </value>
+            <value>
+                <fullName>Credai Fairpro</fullName>
+                <default>false</default>
+                <label>Credai Fairpro</label>
+            </value>
+            <value>
+                <fullName>Credai Online expo</fullName>
+                <default>false</default>
+                <label>Credai Online expo</label>
+            </value>
+            <value>
+                <fullName>Credai Realty Expo</fullName>
+                <default>false</default>
+                <label>Credai Realty Expo</label>
+            </value>
+            <value>
+                <fullName>Domestic Exhibition</fullName>
+                <default>false</default>
+                <label>Domestic Exhibition</label>
+            </value>
+            <value>
+                <fullName>Dubai Gulf News Expo</fullName>
+                <default>false</default>
+                <label>Dubai Gulf News Expo</label>
+            </value>
+            <value>
+                <fullName>Eenadu</fullName>
+                <default>false</default>
+                <label>Eenadu</label>
+            </value>
+            <value>
+                <fullName>HDFC online Expo</fullName>
+                <default>false</default>
+                <label>HDFC online Expo</label>
+            </value>
+            <value>
+                <fullName>Hindu Expo</fullName>
+                <default>false</default>
+                <label>Hindu Expo</label>
+            </value>
+            <value>
+                <fullName>ICICI-Online Expo</fullName>
+                <default>false</default>
+                <label>ICICI-Online Expo</label>
+            </value>
+            <value>
+                <fullName>IMA Event</fullName>
+                <default>false</default>
+                <label>IMA Event</label>
+            </value>
+            <value>
+                <fullName>IT Park Activities</fullName>
+                <default>false</default>
+                <label>IT Park Activities</label>
+            </value>
+            <value>
+                <fullName>Kerala Property Show</fullName>
+                <default>false</default>
+                <label>Kerala Property Show</label>
+            </value>
+            <value>
+                <fullName>Malayala Manorama Fiesta</fullName>
+                <default>false</default>
+                <label>Malayala Manorama Fiesta</label>
+            </value>
+            <value>
+                <fullName>Mall Activity</fullName>
+                <default>false</default>
+                <label>Mall Activity</label>
+            </value>
+            <value>
+                <fullName>Metro Cash and Carry</fullName>
+                <default>false</default>
+                <label>Metro Cash and Carry</label>
+            </value>
+            <value>
+                <fullName>My Property Boutique</fullName>
+                <default>false</default>
+                <label>My Property Boutique</label>
+            </value>
+            <value>
+                <fullName>No Source</fullName>
+                <default>false</default>
+                <label>No Source</label>
+            </value>
+            <value>
+                <fullName>Parent Campaign Codes</fullName>
+                <default>false</default>
+                <label>Parent Campaign Codes</label>
+            </value>
+            <value>
+                <fullName>Propertyconekt.com</fullName>
+                <default>false</default>
+                <label>Propertyconekt.com</label>
+            </value>
+            <value>
+                <fullName>SBI</fullName>
+                <default>false</default>
+                <label>SBI</label>
+            </value>
+            <value>
+                <fullName>SBI Online Expo</fullName>
+                <default>false</default>
+                <label>SBI Online Expo</label>
+            </value>
+            <value>
+                <fullName>ShowmanSphere Online Expo</fullName>
+                <default>false</default>
+                <label>ShowmanSphere Online Expo</label>
+            </value>
+            <value>
+                <fullName>Times Property Virtual Expo</fullName>
+                <default>false</default>
+                <label>Times Property Virtual Expo</label>
+            </value>
+            <value>
+                <fullName>TOI Dubai Expo</fullName>
+                <default>false</default>
+                <label>TOI Dubai Expo</label>
+            </value>
+            <value>
+                <fullName>Virtual Expo</fullName>
+                <default>false</default>
+                <label>Virtual Expo</label>
+            </value>
+            <value>
+                <fullName>BTL Banner</fullName>
+                <default>false</default>
+                <label>BTL Banner</label>
+            </value>
+            <value>
+                <fullName>Short Code</fullName>
+                <default>false</default>
+                <label>Short Code</label>
+            </value>
+            <value>
+                <fullName>Amore Magazine</fullName>
+                <default>false</default>
+                <label>Amore Magazine</label>
+            </value>
+            <value>
+                <fullName>Bangalore Mirror</fullName>
+                <default>false</default>
+                <label>Bangalore Mirror</label>
+            </value>
+            <value>
+                <fullName>Bangalore Times</fullName>
+                <default>false</default>
+                <label>Bangalore Times</label>
+            </value>
+            <value>
+                <fullName>Deccan Chronical</fullName>
+                <default>false</default>
+                <label>Deccan Chronical</label>
+            </value>
+            <value>
+                <fullName>Deccan Herald</fullName>
+                <default>false</default>
+                <label>Deccan Herald</label>
+            </value>
+            <value>
+                <fullName>Dhanam</fullName>
+                <default>false</default>
+                <label>Dhanam</label>
+            </value>
+            <value>
+                <fullName>Dinamalar</fullName>
+                <default>false</default>
+                <label>Dinamalar</label>
+            </value>
+            <value>
+                <fullName>Dina Thanthi</fullName>
+                <default>false</default>
+                <label>Dina Thanthi</label>
+            </value>
+            <value>
+                <fullName>DNA</fullName>
+                <default>false</default>
+                <label>DNA</label>
+            </value>
+            <value>
+                <fullName>Dubai-Malayala Manorama</fullName>
+                <default>false</default>
+                <label>Dubai-Malayala Manorama</label>
+            </value>
+            <value>
+                <fullName>Economic Times</fullName>
+                <default>false</default>
+                <label>Economic Times</label>
+            </value>
+            <value>
+                <fullName>Forbes Magazine</fullName>
+                <default>false</default>
+                <label>Forbes Magazine</label>
+            </value>
+            <value>
+                <fullName>GOSF</fullName>
+                <default>false</default>
+                <label>GOSF</label>
+            </value>
+            <value>
+                <fullName>Gulf Mudhyamam</fullName>
+                <default>false</default>
+                <label>Gulf Mudhyamam</label>
+            </value>
+            <value>
+                <fullName>Gulf News</fullName>
+                <default>false</default>
+                <label>Gulf News</label>
+            </value>
+            <value>
+                <fullName>Gulf Times</fullName>
+                <default>false</default>
+                <label>Gulf Times</label>
+            </value>
+            <value>
+                <fullName>Hindustan Times</fullName>
+                <default>false</default>
+                <label>Hindustan Times</label>
+            </value>
+            <value>
+                <fullName>Inquilab</fullName>
+                <default>false</default>
+                <label>Inquilab</label>
+            </value>
+            <value>
+                <fullName>Khaleej Times</fullName>
+                <default>false</default>
+                <label>Khaleej Times</label>
+            </value>
+            <value>
+                <fullName>Lokmat</fullName>
+                <default>false</default>
+                <label>Lokmat</label>
+            </value>
+            <value>
+                <fullName>Maharashtra Times</fullName>
+                <default>false</default>
+                <label>Maharashtra Times</label>
+            </value>
+            <value>
+                <fullName>Malayalam Manorama</fullName>
+                <default>false</default>
+                <label>Malayalam Manorama</label>
+            </value>
+            <value>
+                <fullName>CRM Referral</fullName>
+                <default>false</default>
+                <label>CRM Referral</label>
+            </value>
+            <value>
+                <fullName>Employees</fullName>
+                <default>false</default>
+                <label>Employees</label>
+            </value>
+            <value>
+                <fullName>Engagement Emails</fullName>
+                <default>false</default>
+                <label>Engagement Emails</label>
+            </value>
+            <value>
+                <fullName>Process Presentation</fullName>
+                <default>false</default>
+                <label>Process Presentation</label>
+            </value>
+            <value>
+                <fullName>Referral Kit</fullName>
+                <default>false</default>
+                <label>Referral Kit</label>
+            </value>
+            <value>
+                <fullName>Registration</fullName>
+                <default>false</default>
+                <label>Registration</label>
+            </value>
+            <value>
+                <fullName>Vendors</fullName>
+                <default>false</default>
+                <label>Vendors</label>
+            </value>
+            <value>
+                <fullName>Pine Lab</fullName>
+                <default>false</default>
+                <label>Pine Lab</label>
+            </value>
+            <value>
+                <fullName>Privilege Referral</fullName>
+                <default>false</default>
+                <label>Privilege Referral</label>
+            </value>
+            <value>
+                <fullName>Refferal at Booking</fullName>
+                <default>false</default>
+                <label>Refferal at Booking</label>
+            </value>
+            <value>
+                <fullName>Referral Others</fullName>
+                <default>false</default>
+                <label>Referral Others</label>
+            </value>
+            <value>
+                <fullName>Tenant</fullName>
+                <default>false</default>
+                <label>Tenant</label>
+            </value>
+            <value>
+                <fullName>Radio-89.1FM</fullName>
+                <default>false</default>
+                <label>Radio-89.1FM</label>
+            </value>
+            <value>
+                <fullName>Radio-94.3FM</fullName>
+                <default>false</default>
+                <label>Radio-94.3FM</label>
+            </value>
+            <value>
+                <fullName>Radio City 91.1</fullName>
+                <default>false</default>
+                <label>Radio City 91.1</label>
+            </value>
+            <value>
+                <fullName>Radio Fever 104 FM</fullName>
+                <default>false</default>
+                <label>Radio Fever 104 FM</label>
+            </value>
+            <value>
+                <fullName>Radio Indigo</fullName>
+                <default>false</default>
+                <label>Radio Indigo</label>
+            </value>
+            <value>
+                <fullName>Radio Mirchi</fullName>
+                <default>false</default>
+                <label>Radio Mirchi</label>
+            </value>
+            <value>
+                <fullName>Radio One</fullName>
+                <default>false</default>
+                <label>Radio One</label>
+            </value>
+            <value>
+                <fullName>Owner</fullName>
+                <default>false</default>
+                <label>Owner</label>
+            </value>
+            <value>
+                <fullName>Content and Social Media</fullName>
+                <default>false</default>
+                <label>Content and Social Media</label>
+            </value>
+            <value>
+                <fullName>CRM</fullName>
+                <default>false</default>
+                <label>CRM</label>
+            </value>
+            <value>
+                <fullName>Display Campaign</fullName>
+                <default>false</default>
+                <label>Display Campaign</label>
+            </value>
+            <value>
+                <fullName>DSTM-Self Purchase</fullName>
+                <default>false</default>
+                <label>DSTM-Self Purchase</label>
+            </value>
+            <value>
+                <fullName>Management Database</fullName>
+                <default>false</default>
+                <label>Management Database</label>
+            </value>
+            <value>
+                <fullName>RM Rejection NC</fullName>
+                <default>false</default>
+                <label>RM Rejection NC</label>
+            </value>
+            <value>
+                <fullName>GoogleSearch</fullName>
+                <default>false</default>
+                <label>GoogleSearch</label>
+            </value>
+            <value>
+                <fullName>GoogleDemandgen</fullName>
+                <default>false</default>
+                <label>GoogleDemandgen</label>
+            </value>
+            <value>
+                <fullName>FacebookCTW</fullName>
+                <default>false</default>
+                <label>FacebookCTW</label>
+            </value>
+            <value>
+                <fullName>Old Database</fullName>
+                <default>false</default>
+                <label>Old Database</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
