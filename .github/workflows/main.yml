@@ -120,7 +120,12 @@ jobs:
             # Show test results if any
             echo ""
             echo "🧪 Test Results:"
-            cat deployment-result.json | jq -r '.result.details.runTestResult? | "  Total: \(.numTestsRun // 0)  Passed: \(.numTestsPassed // 0)  Failed: \(.numFailures // 0)"' || echo "  No tests run"
+            TEST_RESULTS=$(cat deployment-result.json | jq -r '.result.details.runTestResult? | "Total: \(.numTestsRun // 0) Passed: \(.numTestsPassed // 0) Failed: \(.numFailures // 0)"' 2>/dev/null)
+            if [ -z "$TEST_RESULTS" ] || [ "$TEST_RESULTS" = "null" ]; then
+              echo "  No tests run"
+            else
+              echo "  $TEST_RESULTS"
+            fi
             
           else
             echo "⚠️ No deployment result file found"
