@@ -112,7 +112,7 @@ global without sharing class AllSiteVisit_MobileAPI {
             }
             
             List<Channel_Partner__c> cmList = [ SELECT Id FROM Channel_Partner__c  WHERE User_Id__c = :userId AND Active__c = TRUE LIMIT 1 ];
-            
+            //Hello
             if (cmList.isEmpty()) {
                 log.Response__c = 'User Not Found';
                 log.Status__c = 'FAIL';
