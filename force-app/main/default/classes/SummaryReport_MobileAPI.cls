@@ -120,32 +120,42 @@ global without sharing class SummaryReport_MobileAPI {
         /* =======================
            1. TOTAL LEADS
            ======================= */
+
+           List<Related_Source__c> relatedSources = [SELECT Id FROM Related_Source__c WHERE CreatedDate >= :fromDT AND CreatedDate <= :toDT And Channel_Partner1__c =:cmList[0].Id ];
         Integer totalLeads = [SELECT COUNT()  FROM Lead WHERE CreatedDate >= :fromDT AND CreatedDate <= :toDT And Channel_Partner__c =:cmList[0].Id];
-        summaryList.add(new SummaryItem('Lead Summary', totalLeads));
+        summaryList.add(new SummaryItem('Lead Summary', relatedSources.Size()));
 
         /* =======================
            2. LEAD ALLOCATED SUMMARY
            ======================= */
-        Integer allocatedLeads = [SELECT COUNT() FROM Lead WHERE Lead_Status__c = 'Allocated' AND CreatedDate >= :fromDT AND CreatedDate <= :toDT And Channel_Partner__c =:cmList[0].Id];
-        summaryList.add(new SummaryItem('Lead Allocated Summary', allocatedLeads));
+        Integer allocatedLeads = [SELECT COUNT() FROM Related_Source__c WHERE Lead_status1__c = 'Allocated' AND CreatedDate >= :fromDT AND CreatedDate <= :toDT And Channel_Partner1__c =:cmList[0].Id ];
+         summaryList.add(new SummaryItem('Lead Allocated Summary', allocatedLeads));
 
         /* =======================
            3. SITE VISIT SUMMARY
            ======================= */
-        Integer siteVisitCount = [ SELECT COUNT()  FROM Site_Visit__c WHERE CreatedDate >= :fromDT AND CreatedDate <= :toDT AND Channel_Partner__c=:cmList[0].Id];
-        summaryList.add(new SummaryItem('Site Visit Summary', siteVisitCount));
+           Set<Id> rsIds = new Set<Id>();
+           For(Related_Source__c rs : relatedSources){
+            rsIds.add(rs.Id);
+           }
+           List<Site_Visit__c> svList = [ SELECT Id FROM Site_Visit__c WHERE Related_Source__c IN :rsIds ];
+        //Integer siteVisitCount = [ SELECT COUNT()  FROM Site_Visit__c WHERE CreatedDate >= :fromDT AND CreatedDate <= :toDT AND Channel_Partner__c=:cmList[0].Id];
+        summaryList.add(new SummaryItem('Site Visit Summary', svList.Size()));
 
         /* =======================
            4. REVISIT SUMMARY
            ======================= */
-        Integer revisitCount = [SELECT COUNT() FROM Site_Visit__c WHERE Visit_Type__c = 'Revisit' AND CreatedDate >= :fromDT AND CreatedDate <= :toDT AND Channel_Partner__c=:cmList[0].Id];
-        summaryList.add(new SummaryItem('Revisit Summary', revisitCount));
+            List<Site_Visit__c> rvsvList = [ SELECT Id FROM Site_Visit__c WHERE Related_Source__c IN :rsIds AND Visit_Type__c = 'Revisit'];
+        
+        //Integer revisitCount = [SELECT COUNT() FROM Site_Visit__c WHERE Visit_Type__c = 'Revisit' AND CreatedDate >= :fromDT AND CreatedDate <= :toDT AND Channel_Partner__c=:cmList[0].Id];
+        summaryList.add(new SummaryItem('Revisit Summary', rvsvList.Size()));
 
         /* =======================
            5. BOOKED LEADS
            ======================= */
-        Integer bookedLeads = [SELECT COUNT() FROM Lead WHERE Lead_Status__c = 'Booked' AND CreatedDate >= :fromDT AND CreatedDate <= :toDT AND Channel_Partner__c=:cmList[0].Id];
-        summaryList.add(new SummaryItem('Booked Leads', bookedLeads));
+           List<Booking__c> bookedList = [ SELECT Id FROM Booking__c WHERE Related_Source__c IN :rsIds ];
+        //Integer bookedLeads = [SELECT COUNT() FROM Lead WHERE Lead_Status__c = 'Booked' AND CreatedDate >= :fromDT AND CreatedDate <= :toDT AND Channel_Partner__c=:cmList[0].Id];
+        summaryList.add(new SummaryItem('Booked Leads', bookedList.Size()));
 
         /* =======================
            6. LEADS v ALLOCATION
@@ -155,27 +165,27 @@ global without sharing class SummaryReport_MobileAPI {
         /* =======================
            7. ALLOCATION v SITE VISITS
            ======================= */
-        summaryList.add(new SummaryItem('Allocation v Site Visits',Math.min(allocatedLeads, siteVisitCount) ));
+        summaryList.add(new SummaryItem('Allocation v Site Visits',Math.min(allocatedLeads, svList.Size()) ));
 
         /* =======================
            8. SITE VISIT v REVISIT
            ======================= */
-        summaryList.add(new SummaryItem('Site Visit v Revisit',Math.min(siteVisitCount, revisitCount)));
+        summaryList.add(new SummaryItem('Site Visit v Revisit',Math.min(svList.Size(), rvsvList.Size())));
 
         /* =======================
            9. REVISIT v BOOKINGS
            ======================= */
-        summaryList.add(new SummaryItem('Revisit v Bookings', Math.min(revisitCount, bookedLeads)));
+        summaryList.add(new SummaryItem('Revisit v Bookings', Math.min(rvsvList.Size(), bookedList.Size())));
 
         /* =======================
            10. SITE VISITS v BOOKINGS
            ======================= */
-        summaryList.add( new SummaryItem('Site Visits v Bookings', Math.min(siteVisitCount, bookedLeads)));
+        summaryList.add( new SummaryItem('Site Visits v Bookings', Math.min(svList.Size(), bookedList.Size())));
 
         /* =======================
            11. LEADS v BOOKINGS
            ======================= */
-        summaryList.add(new SummaryItem( 'Leads v Bookings',Math.min(totalLeads, bookedLeads)));
+        summaryList.add(new SummaryItem( 'Leads v Bookings',Math.min(totalLeads, bookedList.Size())));
 
         /* =======================
            PDF URL (VF PDF)
