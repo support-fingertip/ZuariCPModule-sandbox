@@ -61,7 +61,7 @@ global without sharing class InvoiceList_MobileAPI {
             Map<Id, List<BookingDetailWrapper>> bookingMap = new Map<Id, List<BookingDetailWrapper>>();
 
             if (!invoiceIds.isEmpty()) {
-                List<Booking__c> bookingList = [ SELECT Id, Invoice__c, Plot__c,Plot__r.Name, Agreement_Value_Before_GST__c, Booking_Date__c
+                List<Booking__c> bookingList = [ SELECT Id,Name, Invoice__c, Plot__c,Plot__r.Name, Agreement_Value_Before_GST__c, Booking_Date__c
                     FROM Booking__c WHERE Invoice__c IN :invoiceIds];
 
                 for (Booking__c b : bookingList) {
@@ -69,6 +69,7 @@ global without sharing class InvoiceList_MobileAPI {
                     bd.unit = b.Plot__r.Name;
                     bd.agreementValue = b.Agreement_Value_Before_GST__c;
                     bd.bookingDate = b.Booking_Date__c;
+                    bd.bookingId= b.Name;
 
                     if (!bookingMap.containsKey(b.Invoice__c)) {
                         bookingMap.put(b.Invoice__c, new List<BookingDetailWrapper>());
@@ -132,6 +133,7 @@ global without sharing class InvoiceList_MobileAPI {
     // ---------- Booking Detail Wrapper ----------
     public class BookingDetailWrapper {
         public String unit;
+        public String bookingId;
         public Decimal agreementValue;
         public Datetime bookingDate;
     }
