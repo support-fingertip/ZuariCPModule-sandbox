@@ -104,7 +104,7 @@ global static void getInvoiceData() {
     }
 }
         // ================= Fetch Bookings =================
-        List<Booking__c> bookings = [ SELECT Id, Name, Invoice__c, CreatedDate,PLot__r.Name,Project__c ,Agreement_Value_Before_GST__c  FROM Booking__c  WHERE sale_agreement_completed__c = TRUE AND Channel_Partner__c = :cpId AND Name IN :input.bookingId  ORDER BY CreatedDate DESC];
+        List<Booking__c> bookings = [ SELECT Id, Name, Invoice__c, CreatedDate,PLot__r.Name,Project__c ,Agreement_Value_Before_GST__c  FROM Booking__c  WHERE (ID IN :bkIds) OR (sale_agreement_completed__c = TRUE AND Channel_Partner__c = :cpId AND Name IN :input.bookingId ) ORDER BY CreatedDate DESC];
         
         
         System.debug(input.bookingId + '---- ' + bookings);
