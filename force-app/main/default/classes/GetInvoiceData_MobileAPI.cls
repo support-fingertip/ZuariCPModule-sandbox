@@ -36,7 +36,11 @@ global static void getInvoiceData() {
         Request__c = requestBody
     );
     
-    try {
+    try {} catch (Exception e) {
+        
+        sendErrorResponse('Error: ' + e.getMessage());
+        // sendError('Failed to fetch invoice data: ' + e.getMessage(), log);
+    }
         // ================= Deserialize Input =================
         GetInvoiceRequestWrapper input = (GetInvoiceRequestWrapper) JSON.deserialize(requestBody, GetInvoiceRequestWrapper.class);
         
@@ -184,11 +188,7 @@ global static void getInvoiceData() {
         log.Response__c = JSON.serialize(res);
         insert log;
         
-    } catch (Exception e) {
-        
-        sendErrorResponse('Error: ' + e.getMessage());
-        // sendError('Failed to fetch invoice data: ' + e.getMessage(), log);
-    }
+    
 }
 
 
