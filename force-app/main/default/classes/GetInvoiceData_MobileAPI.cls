@@ -68,7 +68,9 @@ global static void getInvoiceData() {
         String docName,docUrl;
         if(!String.isBlank(input.invoiceNumber)){
             List<Invoice__c> invList = [SELECT Id, Name FROM Invoice__c WHERE Name = :input.invoiceNumber AND Channel_Partner__c = :cpId LIMIT 1];
+            System.debug('invList----'+invList);
             List<Booking__c> bklst = [ SELECT Id, Name, Invoice__c FROM Booking__c WHERE Invoice__c IN :invList AND Channel_Partner__c = :cpId  ];
+            System.debug('invList----'+bklst.Size());
             For(Booking__c bk : bklst){
                 bkIds.add(bk.Id);
             }
@@ -132,6 +134,7 @@ global static void getInvoiceData() {
             bkIds.add(bk.Id);
             
         }
+        System.debug(bkIds.size());
         List<AggregateResult> aggResults = [SELECT  SUM(Commission_Amount__c) cmam,SUM(TDS_Amount__c) tdsam, SUM(GST_Amount__c) gstam FROM Commission_earned__c
                                             WHERE Booking__c IN :bkIds
                                             GROUP BY Booking__c];
