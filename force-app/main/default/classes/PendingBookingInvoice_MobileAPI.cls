@@ -59,7 +59,7 @@ global without sharing class PendingBookingInvoice_MobileAPI {
                 'FROM Booking__c';
             
             List<String> conditions = new List<String>();
-            conditions.add('Invoice_Created__c = FALSE');
+           // conditions.add('Invoice_Created__c = FALSE');
             conditions.add('sale_agreement_completed__c = TRUE');
                 
             /* Mandatory conditions */
