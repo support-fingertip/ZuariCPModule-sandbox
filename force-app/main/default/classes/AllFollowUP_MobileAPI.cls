@@ -114,7 +114,10 @@ global without sharing class AllFollowUP_MobileAPI {
             
             if (!cmList.isEmpty()) {
                 
-                List<Lead> cpldlst= [Select id from Lead Where Channel_Partner__c =:cmList[0].Id];
+               // List<Lead> cpldlst= [Select id from Lead Where Channel_Partner__c =:cmList[0].Id];
+                 List<Related_Source__c> cpldlst=[select id from Related_Source__c where Channel_Partner1__c =:cmList[0].Id and Is_Locked__c = FALSE];
+               
+
                 if(cpldlst.isEmpty()){
                     log.Response__c = 'No Lead Found for this CP';
                     log.Status__c = 'FAIL';
@@ -127,7 +130,7 @@ global without sharing class AllFollowUP_MobileAPI {
                 
                 Set<Id> cpldId= new Set<Id>();
                 
-                for(Lead ldd : cpldlst){
+                for(Related_Source__c ldd : cpldlst){
                     cpldId.add(ldd.Id);
                     
                 }
@@ -136,7 +139,7 @@ global without sharing class AllFollowUP_MobileAPI {
                 
                 
                 List<String> conditions = new List<String>();
-                conditions.add('SLead__c = :cpldId');
+                conditions.add('Related_Source__c = :cpldId');
                 if (!String.isBlank(search)) {
                     String escapedSearch = String.escapeSingleQuotes(search.trim());
                     
