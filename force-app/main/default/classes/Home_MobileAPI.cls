@@ -82,8 +82,7 @@ global without sharing class Home_MobileAPI {
         
         try {
             
-            DashboardRequest wrapper =
-                (DashboardRequest) JSON.deserialize(requestBody, DashboardRequest.class);
+            DashboardRequest wrapper =(DashboardRequest) JSON.deserialize(requestBody, DashboardRequest.class);
             
             if (wrapper == null || String.isBlank(wrapper.userId)) {
                 log.Response__c = 'UserId should not be blank';
@@ -105,7 +104,8 @@ global without sharing class Home_MobileAPI {
                 return;
             }
             
-            
+            Boolean unReadNotificationExists = [SELECT COUNT() FROM Notification_Subscriber__c WHERE Channel_Partner__c = :cmList[0].Id AND isRead__c = FALSE] > 0;
+
             List<Project__c> projects = [ SELECT Id, Name FROM Project__c   WHERE Active__c = TRUE   AND New_Launch__c = TRUE];
             
             Set<Id> projectIds = new Set<Id>();
@@ -211,7 +211,7 @@ global without sharing class Home_MobileAPI {
             response.data.totalPayments = 11;
             response.data.topPerformedCPs = 13;
             response.data.totalRewards = 17;
-            
+            response.data.unReadNotification = unReadNotificationExists;//added on 16th jan 2026
             List<AggregateResult> projectLeadResults = [SELECT COUNT(Id) totalCount, Allocated_Project__c projectName FROM Lead WHERE Allocated_Project__c != NULL GROUP BY Allocated_Project__c];
             // ===== Project Leads =====
             response.data.projectLeads = new List<ProjectLead>();
@@ -356,6 +356,7 @@ global without sharing class Home_MobileAPI {
         public Integer topPerformedCPs;
         public Integer totalInvoices;
         public Integer totalRewards;
+        public Boolean unReadNotification;//added on 16th jan 2026
         public List<ProjectLead> projectLeads;
         public List<LeadStatus> leadsStatus;
         public List<NewLaunch> newLaunch;
