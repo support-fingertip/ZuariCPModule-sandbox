@@ -1,63 +1,47 @@
-name: Deploy to Salesforce
-
+name: Changeonly Deploy to Salesforce
+ 
 on:
   push:
-    branches: 
+    branches:
       - Praveen_dev_zuariCp
-
+ 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # ---------------------------------------------------------
-      # 1️⃣ Checkout repository
-      # ---------------------------------------------------------
-      - name:  Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      # ---------------------------------------------------------
-      # 2️⃣ Install Salesforce CLI
-      # ---------------------------------------------------------
       - name: Install Salesforce CLI
         run: |
           npm install --global @salesforce/cli
           sf --version
-
-      # ---------------------------------------------------------
-      # 3️⃣ Authenticate to Salesforce
-      # ---------------------------------------------------------
       - name: Authenticate to Salesforce
         run: |
           echo "${{ secrets.SALESFORCE_AUTH_URL }}" > authfile.txt
           sf org login sfdx-url --sfdx-url-file authfile.txt --alias deployment-org --set-default
-
-      # ---------------------------------------------------------
-      # 4️⃣ Deploy to Salesforce - IGNORE ERRORS, DEPLOY WHAT YOU CAN
-      # ---------------------------------------------------------
-      - name: Deploy to Salesforce
+      - name: Deploy changed metadata only
         run: |
-          echo "🚀 Starting deployment..."
-          
-          sf project deploy start \
-            --source-dir force-app \
-            --target-org deployment-org \
-            --wait 60 \
-            --test-level RunLocalTests \
-            --ignore-conflicts \
-            --concise \
-            2>&1 | tee deployment-log.txt || true
-          
-          echo ""
-          echo "════════════════════════════════════════"
-          echo "📊 Deployment attempted.  Check logs above."
-          echo "════════════════════════════════════════"
-
-      # ---------------------------------------------------------
-      # 5️⃣ Cleanup
-      # ---------------------------------------------------------
-      - name:  Cleanup
-        if:  always()
-        run: rm -f authfile. txt
+          PREV="${{ github.event.before }}"
+          CURR="${{ github.sha }}"
+          echo "Previous commit: $PREV"
+          echo "Current commit:  $CURR"
+          git fetch --all --prune
+          if git cat-file -e "$PREV"^{commit}; then
+            echo "Previous commit exists. Using git diff."
+            CHANGED_FILES=$(git diff --name-only "$PREV" "$CURR" | grep '^force-app/' || true)
+          else
+            echo "Previous commit not found. Falling back to last commit."
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '^force-app/' || true)
+          fi
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No Salesforce metadata changes found. Skipping deploy."
+          else
+            sf project deploy start \
+              --source-dir $CHANGED_FILES \
+              --target-org deployment-org \
+              --wait 30
+          fi
