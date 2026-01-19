@@ -861,6 +861,11 @@ trigger RelatedSourceTrigger on Related_Source__c (before insert, after insert, 
     
     if(Trigger.isAfter && Trigger.isUpdate){
         RelatedSourceHandler.sendReassignNotifications(Trigger.new, Trigger.oldMap);
+        
+         /* ============================================================
+       FOR NOTIFICATION RECORD CREATION
+        ============================================================ */
+        RelatedSourceHandler.createNotificationRecords (Trigger.new, Trigger.oldMap);
       
          /* ============================================================
         LEAD VISIBILITY BASED ON Is_Locked__c Rule:
