@@ -1010,10 +1010,10 @@ public without sharing class RelatedSourceHandler {
                 noti.Related_Source__c = newRec.Id;
                 noti.Notification_Type__c = 'Lead Type';
                 noti.Notification_Heading__c = 'Lead Status Changed';
-                noti.Notification_Content__c =
-                    'Status has been updated by this Lead Owner';
+                noti.Notification_Content__c = 'Status has been updated by this Lead Owner';
                 noti.IsActive__c = true;
                 noti.IsNotificationSent__c = false;
+                noti.Notification_Category__c='User Specific';
 
                 notificationsToInsert.add(noti);
             }
