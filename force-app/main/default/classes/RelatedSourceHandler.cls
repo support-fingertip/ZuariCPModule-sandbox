@@ -1013,6 +1013,7 @@ public without sharing class RelatedSourceHandler {
                 noti.Notification_Content__c = 'Status has been updated by this Lead Owner';
                 noti.IsActive__c = true;
                 noti.Channel_Partner__c = newRec.Channel_Partner1__c;
+                noti.Notification_Redirect_Id__c= newRec.Name;
                 noti.IsNotificationSent__c = false;
                 noti.Notification_Category__c='User Specific';
 
