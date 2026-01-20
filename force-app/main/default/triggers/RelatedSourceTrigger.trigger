@@ -865,7 +865,7 @@ trigger RelatedSourceTrigger on Related_Source__c (before insert, after insert, 
          /* ============================================================
        FOR NOTIFICATION RECORD CREATION
         ============================================================ */
-        RelatedSourceHandler.createNotificationRecords (Trigger.new, Trigger.oldMap);
+        NotificationHandler.createNotificationRecordsForRelatedSource (Trigger.new, Trigger.oldMap);
       
          /* ============================================================
         LEAD VISIBILITY BASED ON Is_Locked__c Rule:
