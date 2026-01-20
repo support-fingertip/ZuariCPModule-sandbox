@@ -1,20 +1,18 @@
 public with sharing class NotificationHandler {
-    /**
+   /**
  * @description
  * Handler class responsible for creating Notification__c records
  *
- * This class is invoked from the RelatedSourceTrigger during the
- * after update context and detects lead status field changes
+ * This class is invoked from the RelatedSourceTrigger,FollowUpTrigger,SiteVisitTrigger and PaymentTrigger during the
+ * after update context and detects status field changes
  * to initiate notification creation.
- *
- * Business Rules Implemented:
- * - Detects change in Lead_status1__c field
- * - Verifies Channel_Partner1__c lookup is populated
- * - Creates a Notification__c record when both conditions are satisfied
  *
  *
  * @usage
  * Called from RelatedSourceTrigger (after update context).
+ * Called from SiteVisitTrigger (after update context).
+ * Called from FollowUpTrigger (after update context).
+ * Called from PaymentTrigger (after update context).
  *
  * @author
  * Praveen Kumar
