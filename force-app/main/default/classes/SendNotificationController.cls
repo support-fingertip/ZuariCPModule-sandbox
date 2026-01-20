@@ -64,7 +64,7 @@ public class SendNotificationController {
     @future (callout=true)
     public static void pushOneSignalNotification(String recordId, set<string> playerIds){
         System.debug(playerIds);
-        Notification__c noti = [SELECT Id,Name,Notification_Redirect_Id__c,Notification_Content__c,Notification_Date__c,Notification_Category__c,Notification_Time__c,IsNotificationSent__c,IsActive__c,Channel_Partner__c,One_signal_Notifcation_Id__c,Notification_Heading__c,Notification_Type__c FROM Notification__c WHERE Id=:recordId];
+        Notification__c noti = [SELECT Id,Name,Updated_Status__c,Notification_Redirect_Id__c,Notification_Content__c,Notification_Date__c,Notification_Category__c,Notification_Time__c,IsNotificationSent__c,IsActive__c,Channel_Partner__c,One_signal_Notifcation_Id__c,Notification_Heading__c,Notification_Type__c FROM Notification__c WHERE Id=:recordId];
         string appId = System.Label.app_id;
         string oneSignalAccessToken = System.Label.oneSignalAccessToken;
         // List<string> playerIDs = new List<string>();
@@ -95,7 +95,7 @@ public class SendNotificationController {
             payload.put('headings', new Map<String, String>{'en' => noti.Notification_Heading__c});
             payload.put('contents', new Map<String, String>{'en' => noti.Notification_Content__c});
              Map<String, Object> dataPayload = new Map<String, Object>();
-            dataPayload.put('isChatType', '3');        // or Integer 3
+            dataPayload.put('statusCode', noti.Updated_Status__c);        // or Integer 3
             dataPayload.put('leadId', noti.Notification_Redirect_Id__c);       // dynamic lead id
             dataPayload.put('screen', noti.Notification_Type__c); // navigation key
             
