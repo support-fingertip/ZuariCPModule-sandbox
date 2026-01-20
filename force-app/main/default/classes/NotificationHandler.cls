@@ -104,8 +104,8 @@ public with sharing class NotificationHandler {
 
                 Notification__c noti = new Notification__c();
                 noti.Follow_up__c = newRec.Id;
-                noti.Notification_Type__c = 'Follow Up Notification';
-                noti.Notification_Heading__c = 'Follow Up Status Changed';
+                 noti.Notification_Type__c = 'Followup Notification';
+               noti.Notification_Heading__c = 'Follow Up Status Changed';
                 noti.Notification_Content__c = 'Status has been updated by Follow Up Owner';
                 noti.IsActive__c = true;
                 noti.Channel_Partner__c = newRec.Channel_Partner__c;
