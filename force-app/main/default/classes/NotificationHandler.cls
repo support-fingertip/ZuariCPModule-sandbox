@@ -90,7 +90,35 @@ public with sharing class NotificationHandler {
         }
     }
      public static void createNotificationRecordsForFollowUp(List<Follow_up__c> newList, Map<Id, Follow_up__c> oldMap  ) {
+         List<Notification__c> notificationsToInsert = new List<Notification__c>();
+        for (Follow_up__c newRec : newList) {
 
+            Follow_up__c oldRec = oldMap.get(newRec.Id);
+
+            // ✅ Condition 1: Follow Up Status changed
+            Boolean isStatusChanged = newRec.Status__c != oldRec.Status__c;
+
+            // ✅ Condition 2: Channel Partner exists
+            Boolean hasChannelPartner = newRec.Channel_Partner__c != null;
+            if (isStatusChanged && hasChannelPartner) {
+
+                Notification__c noti = new Notification__c();
+                noti.Follow_up__c = newRec.Id;
+                noti.Notification_Type__c = 'Follow Up Notification';
+                noti.Notification_Heading__c = 'Follow Up Status Changed';
+                noti.Notification_Content__c = 'Status has been updated by Follow Up Owner';
+                noti.IsActive__c = true;
+                noti.Channel_Partner__c = newRec.Channel_Partner__c;
+                noti.Notification_Redirect_Id__c= newRec.Name;
+                noti.IsNotificationSent__c = false;
+                noti.Notification_Category__c='User Specific';
+
+                notificationsToInsert.add(noti);
+            }
+        }
+        if (!notificationsToInsert.isEmpty()) {
+            insert notificationsToInsert;
+        }
      }
        
 }
