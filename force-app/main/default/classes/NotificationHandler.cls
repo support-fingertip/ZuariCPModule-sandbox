@@ -18,44 +18,61 @@ public with sharing class NotificationHandler {
  * Praveen Kumar
  *
  */
+    public static void createNotificationRecordsForRelatedSource(List<Related_Source__c> newList,  Map<Id, Related_Source__c> oldMap) {
+    Map<Id, Notification__c> existingNotifications = new Map<Id, Notification__c>();
 
-public static void createNotificationRecordsForRelatedSource(List<Related_Source__c> newList, Map<Id, Related_Source__c> oldMap  ) {
+    // Fetch existing notifications
+    for (Notification__c n :[SELECT Id, Related_Source__c
+         					FROM Notification__c
+         					WHERE Related_Source__c IN :newList
+         					AND Notification_Category__c = 'User Specific'
+         					AND IsActive__c = true]) {
+        existingNotifications.put(n.Related_Source__c, n);
+    }
 
-    List<Notification__c> notificationsToInsert = new List<Notification__c>();
+    List<Notification__c> toInsert = new List<Notification__c>();
+    List<Notification__c> toUpdate = new List<Notification__c>();
 
     for (Related_Source__c newRec : newList) {
-
         Related_Source__c oldRec = oldMap.get(newRec.Id);
 
-        // ✅ Condition 1: Lead status changed
-        Boolean isStatusChanged =
-            newRec.Lead_status1__c != oldRec.Lead_status1__c;
+        if (newRec.Lead_status1__c != oldRec.Lead_status1__c &&
+            newRec.Channel_Partner1__c != null) {
 
-        // ✅ Condition 2: Channel Partner exists
-        Boolean hasChannelPartner = newRec.Channel_Partner1__c != null;
+            Notification__c noti;
 
-        if (isStatusChanged && hasChannelPartner) {
+            if (existingNotifications.containsKey(newRec.Id)) {
+               
+                noti = existingNotifications.get(newRec.Id);
+            } else {
+                // CREATE
+                noti = new Notification__c();
+                noti.Related_Source__c = newRec.Id;
+                noti.Notification_Category__c = 'User Specific';
+                noti.IsActive__c = true;
+                noti.IsNotificationSent__c = false;
+                toInsert.add(noti);
+            }
 
-            Notification__c noti = new Notification__c();
-            noti.Related_Source__c = newRec.Id;
+            // Common field updates
             noti.Updated_Status__c = newRec.Lead_status1__c;
             noti.Notification_Type__c = 'Lead Notification';
             noti.Notification_Heading__c = 'Lead Status Changed';
             noti.Notification_Content__c = 'Status has been updated by this Lead Owner';
-            noti.IsActive__c = true;
             noti.Channel_Partner__c = newRec.Channel_Partner1__c;
-            noti.Notification_Redirect_Id__c= newRec.Lead_Id__c;
-            noti.IsNotificationSent__c = false;
-            noti.Notification_Category__c='User Specific';
+            noti.Notification_Redirect_Id__c = newRec.Lead_Id__c;
 
-            notificationsToInsert.add(noti);
+            if (noti.Id != null) {
+                toUpdate.add(noti);
+            }
         }
     }
 
-    if (!notificationsToInsert.isEmpty()) {
-        insert notificationsToInsert;
-    }
+    if (!toInsert.isEmpty()) insert toInsert;
+    if (!toUpdate.isEmpty()) update toUpdate;
 }
+
+
 public static void createNotificationRecordsForSiteVisit(List<Site_Visit__c> newList, Map<Id, Site_Visit__c> oldMap  ) {
         List<Notification__c> notificationsToInsert = new List<Notification__c>();
     for (Site_Visit__c newRec : newList) {
@@ -123,29 +140,29 @@ public static void createNotificationRecordsForSiteVisit(List<Site_Visit__c> new
         insert notificationsToInsert;
     }
     }
-    public static void createNotificationRecordsForPayment(List<Payment__c> newList, Map<Id, Payment__c> oldMap  ) {
+    public static void createNotificationRecordsForPayment(List<Payment_Line_Item__c> newList, Map<Id, Payment_Line_Item__c> oldMap  ) {
         List<Notification__c> notificationsToInsert = new List<Notification__c>();
-    for (Payment__c newRec : newList) {
+    for (Payment_Line_Item__c newRec : newList) {
 
-        Payment__c oldRec = oldMap.get(newRec.Id);
+        Payment_Line_Item__c oldRec = oldMap.get(newRec.Id);
 
         // ✅ Condition 1: Payment Status changed
-        Boolean isStatusChanged = newRec.Payment_Status__c != oldRec.Payment_Status__c;
+        Boolean isStatusChanged = newRec.Payament_Status__c != oldRec.Payament_Status__c;
 
         // ✅ Condition 2: Channel Partner exists
         Boolean hasChannelPartner = newRec.Channel_Partner__c != null;
         if (isStatusChanged && hasChannelPartner) {
 
             Notification__c noti = new Notification__c();
-            noti.Payment__c = newRec.Id;
+            noti.Payment_Line_Item__c = newRec.Id;
             
-            noti.Updated_Status__c = newRec.Payment_Status__c;
+            noti.Updated_Status__c = newRec.Payament_Status__c;
             noti.Notification_Type__c = 'Payment Notification';
             noti.Notification_Heading__c = 'Payment Status Changed';
             noti.Notification_Content__c = 'Status has been updated by Payment Owner';
             noti.IsActive__c = true;
             noti.Channel_Partner__c = newRec.Channel_Partner__c;
-            noti.Notification_Redirect_Id__c= newRec.Name;
+            noti.Notification_Redirect_Id__c= newRec.Payment_Line_Item__c;
             noti.IsNotificationSent__c = false;
             noti.Notification_Category__c='User Specific';
 
