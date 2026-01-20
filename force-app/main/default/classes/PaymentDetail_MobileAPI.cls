@@ -75,12 +75,13 @@ global without sharing class PaymentDetail_MobileAPI {
                 return;
             }
             Channel_Partner__c cp = lstcp[0];
+            System.debug(cp);
             // Fetch Payment Line Item
             List<Payment_Line_Item__c> lstpli = [SELECT Id, Name, Payment_Line_Item__c, Project_name__c, Flat_Number__c,
                                                  Booking_Date__c, Payament_Status__c, Booking_Amount__c,
                                                  Comminsion_Rate__c, Commission_Amount__c, Pending_Amount__c,
                                                  Transcantion_Number__c, Payment_Method__c, Processing_Date__c
-                                                 FROM Payment_Line_Item__c  WHERE Payment_Line_Item__c = :input.paymentId AND Payment__r.Channel_Partner__c = :cp.Id   LIMIT 1];
+                                                 FROM Payment_Line_Item__c  WHERE Payment__r.Name = :input.paymentId AND Payment__r.Channel_Partner__c = :cp.Id   LIMIT 1];
             if (lstpli.isEmpty()) {
                 sendError('Payment Line Item not found', log);
                 return;
