@@ -1,23 +1,63 @@
-public with sharing class NotificationHandler {
-   /**
+/**
  * @description
- * Handler class responsible for creating Notification__c records
+ * NotificationHandler is a centralized trigger handler class responsible for
+ * creating or updating Notification__c records based on status changes
+ * in multiple business objects.
  *
- * This class is invoked from the RelatedSourceTrigger,FollowUpTrigger,SiteVisitTrigger and PaymentTrigger during the
- * after update context and detects status field changes
- * to initiate notification creation.
+ * This class ensures that:
+ * - Only one active Notification__c exists per source record
+ * - Existing notifications are updated when status changes
+ * - New notifications are created only when no active record exists
  *
+ * Supported Source Objects:
+ * - Related_Source__c
+ * - Site_Visit__c
+ * - Follow_up__c
+ * - Payment_Line_Item__c
+ *
+ * Key Design Characteristics:
+ * - Trigger-safe and bulk-safe
+ * - Prevents duplicate notifications
+ * - Uses old vs new value comparison
+ * - Centralized notification creation logic
  *
  * @usage
- * Called from RelatedSourceTrigger (after update context).
- * Called from SiteVisitTrigger (after update context).
- * Called from FollowUpTrigger (after update context).
- * Called from PaymentTrigger (after update context).
+ * Called from the following triggers in AFTER UPDATE context:
+ * - RelatedSourceTrigger
+ * - SiteVisitTrigger
+ * - FollowUpTrigger
+ * - PaymentLineItemTrigger
+ *
+ * Each trigger passes Trigger.new and Trigger.oldMap
+ * to the corresponding handler method.
  *
  * @author
  * Praveen Kumar
  *
+ * @lastModifiedDate
+ * 16/01/2026
+ *
+ * @lastModifiedBy
+ * Praveen Kumar
  */
+public with sharing class NotificationHandler {
+
+        /**
+     * @description
+     * Creates or updates Notification__c records for Related_Source__c
+     * when the Lead_status1__c field changes and a Channel Partner
+     * is associated with the record.
+     *
+     * If an active User Specific notification already exists
+     * for the Related_Source__c record, it is updated.
+     * Otherwise, a new Notification__c record is created.
+     *
+     * @param newList
+     * List of Related_Source__c records from Trigger.new
+     *
+     * @param oldMap
+     * Map of Related_Source__c records from Trigger.oldMap
+     */
 
     // Related Source
     public static void createNotificationRecordsForRelatedSource(List<Related_Source__c> newList, Map<Id, Related_Source__c> oldMap) {
@@ -77,6 +117,21 @@ public with sharing class NotificationHandler {
         if (!toUpdate.isEmpty()) update toUpdate;
     }
 
+        /**
+     * @description
+     * Creates or updates Notification__c records for Site_Visit__c
+     * when the Status__c field changes and a Channel Partner
+     * is present on the Site Visit.
+     *
+     * Ensures only one active User Specific notification
+     * exists per Site Visit record.
+     *
+     * @param newList
+     * List of Site_Visit__c records from Trigger.new
+     *
+     * @param oldMap
+     * Map of Site_Visit__c records from Trigger.oldMap
+     */
 
     // Site Visit - now follows same pattern as Related Source: query existing notifications and update or create
     public static void createNotificationRecordsForSiteVisit(List<Site_Visit__c> newList, Map<Id, Site_Visit__c> oldMap) {
@@ -136,6 +191,21 @@ public with sharing class NotificationHandler {
         if (!toUpdate.isEmpty()) update toUpdate;
     }
 
+        /**
+     * @description
+     * Creates or updates Notification__c records for Follow_up__c
+     * when the Status__c field changes and a Channel Partner
+     * is associated with the Follow Up.
+     *
+     * Prevents duplicate notifications by updating
+     * existing active User Specific notifications.
+     *
+     * @param newList
+     * List of Follow_up__c records from Trigger.new
+     *
+     * @param oldMap
+     * Map of Follow_up__c records from Trigger.oldMap
+     */
 
     // Follow Up - same pattern: check existing Notification__c by Follow_up__c
     public static void createNotificationRecordsForFollowUp(List<Follow_up__c> newList, Map<Id, Follow_up__c> oldMap) {
@@ -195,6 +265,21 @@ public with sharing class NotificationHandler {
         if (!toUpdate.isEmpty()) update toUpdate;
     }
 
+        /**
+     * @description
+     * Creates or updates Notification__c records for Payment_Line_Item__c
+     * when the Payament_Status__c field changes and a Channel Partner
+     * is associated with the payment.
+     *
+     * Ensures idempotent notification handling by updating
+     * existing active notifications instead of creating duplicates.
+     *
+     * @param newList
+     * List of Payment_Line_Item__c records from Trigger.new
+     *
+     * @param oldMap
+     * Map of Payment_Line_Item__c records from Trigger.oldMap
+     */
 
     // Payment - same pattern: check existing Notification__c by Payment_Line_Item__c
     public static void createNotificationRecordsForPayment(List<Payment_Line_Item__c> newList, Map<Id, Payment_Line_Item__c> oldMap) {
