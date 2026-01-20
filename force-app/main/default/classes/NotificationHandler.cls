@@ -88,5 +88,9 @@ public with sharing class NotificationHandler {
         if (!notificationsToInsert.isEmpty()) {
             insert notificationsToInsert;
         }
-    }    
+    }
+     public static void createNotificationRecordsForFollowUp(List<Follow_up__c> newList, Map<Id, Follow_up__c> oldMap  ) {
+
+     }
+       
 }
