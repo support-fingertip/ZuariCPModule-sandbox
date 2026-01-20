@@ -38,6 +38,7 @@ public static void createNotificationRecordsForRelatedSource(List<Related_Source
 
             Notification__c noti = new Notification__c();
             noti.Related_Source__c = newRec.Id;
+            noti.Updated_Status__c = newRec.Lead_status1__c;
             noti.Notification_Type__c = 'Lead Notification';
             noti.Notification_Heading__c = 'Lead Status Changed';
             noti.Notification_Content__c = 'Status has been updated by this Lead Owner';
@@ -70,6 +71,8 @@ public static void createNotificationRecordsForSiteVisit(List<Site_Visit__c> new
 
             Notification__c noti = new Notification__c();
             noti.Site_Visit__c = newRec.Id;
+            
+            noti.Updated_Status__c = newRec.Status__c;
             noti.Notification_Type__c = 'Site Visit Notification';
             noti.Notification_Heading__c = 'Site Visit Status Changed';
             noti.Notification_Content__c = 'Status has been updated by Site Visit Owner';
@@ -102,6 +105,8 @@ public static void createNotificationRecordsForSiteVisit(List<Site_Visit__c> new
 
             Notification__c noti = new Notification__c();
             noti.Follow_up__c = newRec.Id;
+            
+            noti.Updated_Status__c = newRec.Status__c;
                 noti.Notification_Type__c = 'Followup Notification';
             noti.Notification_Heading__c = 'Follow Up Status Changed';
             noti.Notification_Content__c = 'Status has been updated by Follow Up Owner';
@@ -133,7 +138,9 @@ public static void createNotificationRecordsForSiteVisit(List<Site_Visit__c> new
 
             Notification__c noti = new Notification__c();
             noti.Payment__c = newRec.Id;
-                noti.Notification_Type__c = 'Payment Notification';
+            
+            noti.Updated_Status__c = newRec.Payment_Status__c;
+            noti.Notification_Type__c = 'Payment Notification';
             noti.Notification_Heading__c = 'Payment Status Changed';
             noti.Notification_Content__c = 'Status has been updated by Payment Owner';
             noti.IsActive__c = true;
