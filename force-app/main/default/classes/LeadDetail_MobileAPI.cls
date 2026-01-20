@@ -53,25 +53,25 @@ global without sharing class LeadDetail_MobileAPI {
 
 
             // Fetch Lead
-            Lead l = [SELECT Id, LastName, Phone__c,Lead_ID__c, Email,CreatedDate, Description,OwnerId, CreatedBy.Name,Lead_Status__c, Allocated_Project__c
-                      FROM Lead WHERE Lead_ID__c = :input.leadId AND Channel_Partner__c = :cpList[0].id  LIMIT 1];
+           // Lead l = [SELECT Id, LastName, Phone__c,Lead_ID__c, Email,CreatedDate, Description,OwnerId, CreatedBy.Name,Lead_Status__c, Allocated_Project__c
+              //        FROM Lead WHERE Lead_ID__c = :input.leadId AND Channel_Partner__c = :cpList[0].id  LIMIT 1];
            Related_Source__c rl = [Select id,Name__c,Lead_status1__c,OwnerId,Primary_Phone__c,Email__c,Allocated_Project__c,CreatedDate from Related_Source__c Where Is_Locked__c = FALSE AND Lead_Id__c = :input.leadId AND Channel_Partner1__c =:cpList[0].id limit 1];
             
 system.debug(rl);
-            if (l == null) {
+            if (rl == null) {
                 sendError('Lead not found', log, logInserted);
                 return;
             }
             User u;
-             if (l.OwnerId != null) {
+             if (rl.OwnerId != null) {
                u = [SELECT Id, Name, Email,CreatedDate, MobilePhone FROM User WHERE Id = :rl.OwnerId];
             }
-              List<Related_Source__c> relatedSources = [SELECT Id FROM Related_Source__c WHERE SLead__c = :l.Id  ];
+           //   List<Related_Source__c> relatedSources = [SELECT Id FROM Related_Source__c WHERE SLead__c = :l.Id  ];
             
             Set<Id> relatedSourceIds = new Set<Id>();
-            for (Related_Source__c rs : relatedSources) {
-                relatedSourceIds.add(rs.Id);
-            }
+         //   for (Related_Source__c rs : relatedSources) {
+             //   relatedSourceIds.add(rs.Id);
+           // }
 
             // Prepare contact info
             ContactInformation contactInfo = new ContactInformation();
