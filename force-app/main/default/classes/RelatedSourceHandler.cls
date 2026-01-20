@@ -987,7 +987,7 @@ public without sharing class RelatedSourceHandler {
  * @author
  * Praveen Kumar
  *
- */
+ 
 
     public static void createNotificationRecords(List<Related_Source__c> newList, Map<Id, Related_Source__c> oldMap  ) {
 
@@ -1025,5 +1025,5 @@ public without sharing class RelatedSourceHandler {
             insert notificationsToInsert;
         }
     }
-
+*/
 }
