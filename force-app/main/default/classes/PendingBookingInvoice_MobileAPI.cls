@@ -22,8 +22,7 @@ global without sharing class PendingBookingInvoice_MobileAPI {
             Request_Type__c = 'PendingBookingInvoice_MobileAPI',
             Request__c = requestBody
         );
-        
-        try {
+         try {
             /* -------------------------------
                Deserialize Request
              ------------------------------- */
@@ -46,8 +45,7 @@ global without sharing class PendingBookingInvoice_MobileAPI {
             
             Id cpId = cp.Id;
             List<Booking__c> bookingList = new List<Booking__c>();
- 
-            
+ 			 
             /* -------------------------------
                Build Dynamic SOQL
             ------------------------------- */
@@ -59,7 +57,7 @@ global without sharing class PendingBookingInvoice_MobileAPI {
                 'FROM Booking__c';
             
             List<String> conditions = new List<String>();
-            conditions.add('Invoice_Created__c = FALSE');
+           // conditions.add('Invoice_Created__c = FALSE');
             conditions.add('sale_agreement_completed__c = TRUE');
                 
             /* Mandatory conditions */
@@ -70,7 +68,13 @@ global without sharing class PendingBookingInvoice_MobileAPI {
             
             /* Optional project filter */
            
-            
+            if (!String.isBlank(input.projectId)) {
+                
+          
+             List<Project__c> project = [ SELECT Id,Project_Id__c,Project__c FROM Project__c WHERE Project__c = :input.projectId LIMIT 1  ];
+            String prj = project[0].Project__c;
+    conditions.add('Project__c = \'' + String.escapeSingleQuotes(prj) + '\'');
+}
             /* Optional booking date filter */
            if (input.bookingDate != null) {
     Date d = Date.ValueOf(input.bookingDate);
@@ -133,14 +137,14 @@ if (!String.isBlank(input.invoiceNumber)) {
             log.Status__c = 'SUCCESS';
             log.Response__c = JSON.serialize(res);
             insert log;
-            
-        } catch (Exception e) {
+            } catch (Exception e) {
             
             sendError(
                 'Failed to fetch pending booking invoices: ' + e.getMessage(),
                 log
             );
         }
+        
     }
     
     /* ===============================

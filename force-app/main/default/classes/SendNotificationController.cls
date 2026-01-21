@@ -4,13 +4,19 @@ public class SendNotificationController {
         if(recordId!=null){
             
             Notification__c nc = [SELECT Id,Name,Notification_Content__c,Notification_Date__c,Notification_Time__c,IsNotificationSent__c,IsActive__c,Channel_Partner__c,Notification_Category__c,
+                                  Related_Source__c,Follow_up__c,Site_Visit__c,Payment__c,
                                   (SELECT Id,Name,Channel_Partner__c,Notification__c FROM Notification_Subscribers__r)
                                   FROM Notification__c WHERE Id=:recordId];
+            
             set<Id> customerIds = new set<Id>();
             for(Notification_Subscriber__c nrc : nc.Notification_Subscribers__r){
                 customerIds.add(nc.Channel_Partner__c);
             }
             List<Channel_Partner__c> cmList = new List<Channel_Partner__c>();
+            
+            if(nc.Notification_Category__c=='User Specific' && nc.Channel_Partner__c!=null){
+                cmList = [ SELECT Id, Email__c, Password__c,Name  FROM Channel_Partner__c  where Active__c = TRUE AND Id=:nc.Channel_Partner__c];
+            }
             if(nc.Notification_Category__c=='User Specific' && !customerIds.contains(nc.Channel_Partner__c)){
                 cmList = [ SELECT Id, Email__c, Password__c,Name  FROM Channel_Partner__c  where Active__c = TRUE AND Id=:nc.Channel_Partner__c];
             }else{
@@ -33,8 +39,8 @@ public class SendNotificationController {
                 List<Logged_in_Device__c> deviceList = new List<Logged_in_Device__c>();
                 deviceList = [SELECT Id,Device_Id__c FROM Logged_in_Device__c WHERE Channel_Partner__c IN :customerId AND Status__c='Active' AND Device_Id__c!=null];
                 for(Logged_in_Device__c div : deviceList){
-                   deviceId.add(div.Device_Id__c);
-                // deviceId.add('d950514c-c587-42f2-a357-d85fa6a7760d');
+                    deviceId.add(div.Device_Id__c);
+                    // deviceId.add('d950514c-c587-42f2-a357-d85fa6a7760d');
                 }
                 
             }
@@ -58,7 +64,7 @@ public class SendNotificationController {
     @future (callout=true)
     public static void pushOneSignalNotification(String recordId, set<string> playerIds){
         System.debug(playerIds);
-        Notification__c noti = [SELECT Id,Name,Notification_Content__c,Notification_Date__c,Notification_Category__c,Notification_Time__c,IsNotificationSent__c,IsActive__c,Channel_Partner__c,One_signal_Notifcation_Id__c,Notification_Heading__c FROM Notification__c WHERE Id=:recordId];
+        Notification__c noti = [SELECT Id,Name,Updated_Status__c,Notification_Redirect_Id__c,Notification_Content__c,Notification_Date__c,Notification_Category__c,Notification_Time__c,IsNotificationSent__c,IsActive__c,Channel_Partner__c,One_signal_Notifcation_Id__c,Notification_Heading__c,Notification_Type__c FROM Notification__c WHERE Id=:recordId];
         string appId = System.Label.app_id;
         string oneSignalAccessToken = System.Label.oneSignalAccessToken;
         // List<string> playerIDs = new List<string>();
@@ -80,14 +86,21 @@ public class SendNotificationController {
             payload.put('app_id', appId);
             payload.put('include_player_ids', playerIds);
             /*
-            if(noti.Notification_Category__c !='User Specific'){
-                payload.put('included_segments', new List<String>{'All'});
-            }else{
-                payload.put('include_player_ids', playerIds);
-            }
-            */
+if(noti.Notification_Category__c !='User Specific'){
+payload.put('included_segments', new List<String>{'All'});
+}else{
+payload.put('include_player_ids', playerIds);
+}
+*/
             payload.put('headings', new Map<String, String>{'en' => noti.Notification_Heading__c});
             payload.put('contents', new Map<String, String>{'en' => noti.Notification_Content__c});
+            Map<String, Object> dataPayload = new Map<String, Object>();
+            dataPayload.put('statusCode', noti.Updated_Status__c);        // or Integer 3
+            dataPayload.put('leadId', noti.Notification_Redirect_Id__c);       // dynamic lead id
+            dataPayload.put('screen', noti.Notification_Type__c); // navigation key
+            
+            payload.put('data', dataPayload);
+            
             //payload.put('large_icon', 'https://cdn-icons-png.flaticon.com/512/733/733585.png');
             //payload.put('big_picture', noti.ImageUrl__c);
             String body = JSON.serialize(payload);
@@ -125,7 +138,6 @@ public class SendNotificationController {
             log.Error_Message__c =  e.getMessage();
             System.debug('Something went wrong'+e.getMessage());
         } 
-        System.debug(noti);
         update noti;
         insert log;
     }

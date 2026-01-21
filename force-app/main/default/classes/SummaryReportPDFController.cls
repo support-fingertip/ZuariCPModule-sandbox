@@ -41,46 +41,25 @@ public without sharing class SummaryReportPDFController {
     
     private void buildSummary() {
         summaryList = new List<SummaryItem>();
-        
-        Integer totalLeads = [
-            SELECT COUNT()
-            FROM Lead
-            WHERE CreatedDate >= :fromDate
-            AND CreatedDate <= :toDate
-            And Channel_Partner__c =:chhpId
-        ];
+         List<Related_Source__c> relatedSources = [SELECT Id FROM Related_Source__c WHERE CreatedDate >= :fromDate AND CreatedDate <= :toDate And Channel_Partner1__c =:chhpId ];
+       Set<Id> rsIds = new Set<Id>();
+           For(Related_Source__c rs : relatedSources){
+            rsIds.add(rs.Id);
+           }
+        Integer totalLeads = relatedSources.Size();
         System.debug(totalLeads + '== '+ chhpId + '--- '+fromDate);
-        Integer allocatedLeads = [
-            SELECT COUNT()
-            FROM Lead
-            WHERE Lead_Status__c = 'Allocated' AND Channel_Partner__c =:chhpId
-            AND CreatedDate >= :fromDate
-            AND CreatedDate <= :toDate
-        ];
+
+         Integer allocatedLeads = [SELECT COUNT() FROM Related_Source__c WHERE Lead_status1__c = 'Allocated' AND CreatedDate >= :fromDate AND CreatedDate <= :toDate And Channel_Partner1__c =:chhpId ];
+       
+        List<Booking__c> bookedList = [ SELECT Id FROM Booking__c WHERE Related_Source__c IN :rsIds ];
+       
+        Integer bookedLeads =bookedList.Size();
+         List<Site_Visit__c> svList = [ SELECT Id FROM Site_Visit__c WHERE Related_Source__c IN :rsIds ];
         
-        Integer bookedLeads = [
-            SELECT COUNT()
-            FROM Lead
-            WHERE Lead_Status__c = 'Booked'
-            AND CreatedDate >= :fromDate
-            AND CreatedDate <= :toDate  AND Channel_Partner__c =:chhpId
-        ];
+        Integer siteVisits =svList.Size();
+         List<Site_Visit__c> rvsvList = [ SELECT Id FROM Site_Visit__c WHERE Related_Source__c IN :rsIds AND Visit_Type__c = 'Revisit'];
         
-        Integer siteVisits = [
-            SELECT COUNT()
-            FROM Site_Visit__c
-            WHERE CreatedDate >= :fromDate AND   Channel_Partner__c =:chhpId
-            AND CreatedDate <= :toDate
-        ];
-        
-        Integer revisits = [
-            SELECT COUNT()
-            FROM Site_Visit__c
-            WHERE Visit_Type__c = 'Revisit'
-            AND CreatedDate >= :fromDate
-            AND CreatedDate <= :toDate  AND Channel_Partner__c =:chhpId
-        ];
-        
+        Integer revisits = rvsvList.Size();
         summaryList.add(new SummaryItem('Lead Summary', totalLeads));
         summaryList.add(new SummaryItem('Lead Allocated Summary', allocatedLeads));
         summaryList.add(new SummaryItem('Site Visit Summary', siteVisits));

@@ -5,10 +5,32 @@ trigger SLeadTrigger on Lead (before insert, after insert, before update, after 
         if(Utility.runLeadTrigger  != false){
             
             if (Trigger.isBefore) {
-                if (Trigger.isInsert) {   
+                if (Trigger.isInsert) {  
+                    Id adminUserId;
+                    
+                    List<User> adminUsers = [
+                        SELECT Id 
+                        FROM User 
+                        WHERE Profile.Name = 'System Administrator'
+                        AND IsActive = true
+                        ORDER BY CreatedDate ASC
+                        LIMIT 1
+                    ];
+                    
+                    if (!adminUsers.isEmpty()) {
+                        adminUserId = adminUsers[0].Id;
+                    }
                     
                     list<Lead> ldlist = new list<Lead>();
                     for (Lead led : Trigger.new) {
+                        // FORCE ADMIN OWNER IF LEAD IS ALREADY ASSIGNED
+                        if (led.Lead_Assigned__c == true && adminUserId != null) {
+                             led.backup_user_Field__c = led.OwnerId;
+                             System.debug('Owner passed from data upload Lead: ' + led.backup_user_Field__c);
+                            led.OwnerId = adminUserId;
+                            System.debug('Owner forced to Admin for Lead: ' + led.Id +'user' + adminUserId);
+                            continue; // skip other owner logic if needed
+                        }
                         if (led.Channel_Partner__c != null) {
                             ldlist.add(led);
                         }

@@ -25,186 +25,228 @@
 ******************************************************************************************/
 @RestResource(urlMapping='/GetInvoiceDataAPI/*')
 global without sharing class GetInvoiceData_MobileAPI {
-    @HttpPost
-    global static void getInvoiceData() {
+@HttpPost
+global static void getInvoiceData() {
+    
+    RestRequest req = RestContext.request;
+    String requestBody = req.requestBody == null ? null : req.requestBody.toString();
+    
+    Apex_Log__c log = new Apex_Log__c(
+        Request_Type__c = 'GetInvoiceData_MobileAPI',
+        Request__c = requestBody
+    );
+    
+    try {
+        // ================= Deserialize Input =================
+        GetInvoiceRequestWrapper input = (GetInvoiceRequestWrapper) JSON.deserialize(requestBody, GetInvoiceRequestWrapper.class);
         
-        RestRequest req = RestContext.request;
-        String requestBody = req.requestBody == null ? null : req.requestBody.toString();
-        
-        Apex_Log__c log = new Apex_Log__c(
-            Request_Type__c = 'GetInvoiceData_MobileAPI',
-            Request__c = requestBody
-        );
-        
-        try {
-            // ================= Deserialize Input =================
-            GetInvoiceRequestWrapper input = (GetInvoiceRequestWrapper) JSON.deserialize(requestBody, GetInvoiceRequestWrapper.class);
-            
-            if (input == null || String.isBlank(input.userId)
-                || input.bookingId == null || input.bookingId.isEmpty()) {
-                    log.response__c = 'userId and bookingId are required';
-                    log.Status__c = 'FAIL';
-                    insert log;
-                    
-                    sendErrorResponse('userId and bookingId are required');
-                    return;
-                }
-            
-            // ================= Validate Channel Partner =================
-            List<Channel_Partner__c> cpList = [ SELECT Id FROM Channel_Partner__c  WHERE User_Id__c = :input.userId  AND Active__c = TRUE LIMIT 1];
-            
-            if (cpList.isEmpty()) {
-                log.response__c = 'Channel Partner not found';
+        if (input == null || String.isBlank(input.userId)
+            || input.bookingId == null || input.bookingId.isEmpty()) {
+                log.response__c = 'userId and bookingId are required';
                 log.Status__c = 'FAIL';
                 insert log;
                 
-                sendErrorResponse('Channel Partner not found');
+                sendErrorResponse('userId and bookingId are required');
                 return;
             }
-            
-            Id cpId = cpList[0].Id;
-            System.debug(cpId);
-            // ================= Fetch Bookings =================
-            List<Booking__c> bookings = [ SELECT Id, Name, Invoice__c, CreatedDate,PLot__r.Name,Project__c ,Agreement_Value_Before_GST__c  FROM Booking__c  WHERE sale_agreement_completed__c = TRUE AND Channel_Partner__c = :cpId AND Name IN :input.bookingId  ORDER BY CreatedDate DESC];
-            
-            
-            System.debug(input.bookingId + '---- ' + bookings);
-            Set<Id> bkIds= new Set<Id>();
-            
-            if (bookings.isEmpty()) {
-                log.response__c = 'No bookings found';
-                log.Status__c = 'FAIL';
-                insert log;
-                
-                sendErrorResponse('No bookings found');
-                return;
-            }
-            
-            // ================= Ensure SINGLE Invoice =================
-            String ProjectName;
-            Decimal bkagreementAmount=0;
-            Decimal bkcommissionAmount=0;
-            Decimal canbookingam=0;
-            Decimal tdsamount =0;
-            Decimal gstamount =0;
-            
-            
-            
-            for (Booking__c bk : bookings) {
-                ProjectName = bk.Project__c;
-                bkagreementAmount = bkagreementAmount+ bk.Agreement_Value_Before_GST__c;
-                bkIds.add(bk.Id);
-                
-            }
-            List<AggregateResult> aggResults = [SELECT  SUM(Commission_Amount__c) cmam,SUM(TDS_Amount__c) tdsam, SUM(GST_Amount__c) gstam FROM Commission_earned__c
-                                                WHERE Booking__c IN :bkIds
-                                                GROUP BY Booking__c];
-            for (AggregateResult ar : aggResults) {
-                bkcommissionAmount += (Decimal) ar.get('cmam');
-                tdsamount          += (Decimal) ar.get('tdsam');
-                gstamount          += (Decimal) ar.get('gstam');
-            }
-            
-            InvoiceGroupData grp = new InvoiceGroupData();
-            grp.projectName = ProjectName;
-            grp.agreementAmount = bkagreementAmount; // Summation of all Booking's Aggreement Amount
-            grp.commissionAmount = bkcommissionAmount;// Commission amount of all Booking's 
-            grp.cancelledBookingCommissionAmount = 0;//
-            grp.tds = tdsamount;
-            grp.gst =gstamount;
-            grp.invoiceDate = system.today();
-            grp.invoiceId = '';
-            grp.uploadDocumentURL= '';
-            grp.documentName = '';
-            grp.netInvoiceAmount = 0;
-            grp.bookingDetails = new List<BookingDetail>();
-            grp.bookingId = new List<String>();
-            
-            // ================= Add MULTIPLE Booking Details =================
-            for (Booking__c bk : bookings) {
-                
-                BookingDetail bd = new BookingDetail();
-                bd.unit = bk.Plot__r.Name;
-                bd.agreementAmount = bk.Agreement_Value_Before_GST__c;
-                bd.bookingDate = bk.CreatedDate;
-                
-                grp.bookingDetails.add(bd);
-                grp.bookingId.add(bk.Name);
-            }
-            
-            // ================= Final Response =================
-            List<InvoiceGroupData> dataList = new List<InvoiceGroupData>();
-            // grp; // ✅ ONLY ONE OBJECT
-            
-            InvoiceResponseWrapper res = new InvoiceResponseWrapper( true,'Invoice data',grp);
-            
-            RestContext.response.statusCode = 200;
-            RestContext.response.responseBody = Blob.valueOf(JSON.serialize(res));
-            
-            log.Status__c = 'SUCCESS';
-            log.Response__c = JSON.serialize(res);
+        
+        // ================= Validate Channel Partner =================
+        List<Channel_Partner__c> cpList = [ SELECT Id FROM Channel_Partner__c  WHERE User_Id__c = :input.userId  AND Active__c = TRUE LIMIT 1];
+        
+        if (cpList.isEmpty()) {
+            log.response__c = 'Channel Partner not found';
+            log.Status__c = 'FAIL';
             insert log;
             
-        } catch (Exception e) {
-            
-            sendErrorResponse('Error: ' + e.getMessage());
-            // sendError('Failed to fetch invoice data: ' + e.getMessage(), log);
+            sendErrorResponse('Channel Partner not found');
+            return;
         }
-    }
-    
-    
-    // ================= Input Wrapper =================
-    public class GetInvoiceRequestWrapper {
-        public String userId;
-        public List<String> bookingId;
-    }
-    
-    // ================= Response Wrappers =================
-    public class BookingDetail {
-        public String unit;
-        public Decimal agreementAmount;
-        public Datetime bookingDate;
-    }
-    
-    public class InvoiceGroupData {
-        public String projectName;
-        public Decimal agreementAmount;
-        public Decimal commissionAmount;
-        public Decimal cancelledBookingCommissionAmount;
-        public Decimal tds;
-        public Decimal gst;
-        public Decimal netInvoiceAmount;
-        public Date invoiceDate ;
-        Public String invoiceId ;
-        public String uploadDocumentURL;
-        public String documentName;
-        public List<BookingDetail> bookingDetails;
-        public List<String> bookingId;
-    }
-    
-    public class InvoiceResponseWrapper {
-        public Boolean status;
-        public String message;
-        public InvoiceGroupData data;
         
-        public InvoiceResponseWrapper(Boolean s, String m, InvoiceGroupData d) {
-            status = s;
-            message = m;
-            data = d;
+        Id cpId = cpList[0].Id;
+        System.debug(cpId);
+            Set<Id> bkIds= new Set<Id>();
+        String docName,docUrl;
+        Date invoicedate ;
+        if(!String.isBlank(input.invoiceNumber)){
+            List<Invoice__c> invList = [SELECT Id, Name,Invoice_Date__c FROM Invoice__c WHERE Name = :input.invoiceNumber AND Channel_Partner__c = :cpId LIMIT 1];
+            invoicedate =invList[0].Invoice_Date__c;
+            System.debug('invList----'+invList);
+            List<Booking__c> bklst = [ SELECT Id, Name, Invoice__c FROM Booking__c WHERE Invoice__c IN :invList AND Channel_Partner__c = :cpId  ];
+            System.debug('invList----'+bklst.Size());
+            For(Booking__c bk : bklst){
+                bkIds.add(bk.Id);
+            }
+            if(!invList.isEmpty()){
+                    List<ContentDocumentLink> links = [SELECT ContentDocumentId   FROM ContentDocumentLink   WHERE LinkedEntityId = :invList[0].Id];
+            
+            Set<Id> docIds = new Set<Id>();
+            for (ContentDocumentLink cdl : links) {
+                docIds.add(cdl.ContentDocumentId);
+            }
+            
+            if (!docIds.isEmpty()) {
+                System.debug('Inside the doc');
+                List<ContentVersion> versions = [ SELECT Id, Title, FileExtension, ContentDocumentId  FROM ContentVersion WHERE IsLatest = TRUE  AND ContentDocumentId IN :docIds];
+                
+                Map<Id, String> versionTitleMap = new Map<Id, String>();
+                for (ContentVersion cv : versions) {
+                    versionTitleMap.put(cv.Id, cv.Title);
+                }
+                
+                List<ContentDistribution> dists = [SELECT ContentVersionId,ContentVersion.Title, ContentVersion.FileExtension,ContentDownloadUrl,DistributionPublicUrl FROM ContentDistribution   WHERE ContentVersionId IN :versionTitleMap.keySet()  ORDER BY CreatedDate DESC limit 1];
+            for(ContentDistribution cd : dists){
+
+                docName = cd.ContentVersion.Title + '.' + cd.ContentVersion.FileExtension;
+            docUrl  = cd.ContentDownloadUrl;
+                    
+
+            }
+
         }
     }
-    
-    // ================= Error Helper =================
-    
-    
-    private static void sendErrorResponse(String message) {
+}
+        // ================= Fetch Bookings =================
+        List<Booking__c> bookings = [ SELECT Id, Name, Invoice__c, CreatedDate,PLot__r.Name,Project__c ,Agreement_Value_Before_GST__c  FROM Booking__c  WHERE (ID IN :bkIds) OR (sale_agreement_completed__c = TRUE AND Channel_Partner__c = :cpId AND Name IN :input.bookingId ) ORDER BY CreatedDate DESC];
+        
+        
+        System.debug(input.bookingId + '---- ' + bookings);
+        
+        if (bookings.isEmpty()) {
+            log.response__c = 'No bookings found';
+            log.Status__c = 'FAIL';
+            insert log;
+            
+            sendErrorResponse('No bookings found');
+            return;
+        }
+        
+        // ================= Ensure SINGLE Invoice =================
+        String ProjectName;
+        Decimal bkagreementAmount=0;
+        Decimal bkcommissionAmount=0;
+        Decimal canbookingam=0;
+        Decimal tdsamount =0;
+        Decimal gstamount =0;
+        
+        
+        
+        for (Booking__c bk : bookings) {
+            ProjectName = bk.Project__c;
+            bkagreementAmount = bkagreementAmount+ bk.Agreement_Value_Before_GST__c;
+            bkIds.add(bk.Id);
+            
+        }
+        System.debug(bkIds.size());
+        List<AggregateResult> aggResults = [SELECT  SUM(Commission_Amount__c) cmam,SUM(TDS_Amount__c) tdsam, SUM(GST_Amount__c) gstam FROM Commission_earned__c
+                                            WHERE Booking__c IN :bkIds
+                                            GROUP BY Booking__c];
+        for (AggregateResult ar : aggResults) {
+            bkcommissionAmount += (Decimal) ar.get('cmam');
+            tdsamount          += (Decimal) ar.get('tdsam');
+            gstamount          += (Decimal) ar.get('gstam');
+        }
+        
+        InvoiceGroupData grp = new InvoiceGroupData();
+        grp.projectName = ProjectName;
+        grp.agreementAmount = bkagreementAmount; // Summation of all Booking's Aggreement Amount
+        grp.commissionAmount = bkcommissionAmount;// Commission amount of all Booking's 
+        grp.cancelledBookingCommissionAmount = 0;//
+        grp.tds = tdsamount;
+        grp.gst =gstamount;
+        grp.invoiceDate =  invoicedate != null ? invoicedate : System.Today();
+        grp.invoiceId = '';
+        grp.uploadDocumentURL= docUrl;
+        grp.documentName = docName;
+        grp.netInvoiceAmount = 0;
+        grp.bookingDetails = new List<BookingDetail>();
+        grp.bookingId = new List<String>();
+        
+        // ================= Add MULTIPLE Booking Details =================
+        for (Booking__c bk : bookings) {
+            
+            BookingDetail bd = new BookingDetail();
+            bd.unit = bk.Plot__r.Name;
+            bd.agreementAmount = bk.Agreement_Value_Before_GST__c;
+            bd.bookingDate = bk.CreatedDate;
+            
+            grp.bookingDetails.add(bd);
+            grp.bookingId.add(bk.Name);
+        }
+        
+        // ================= Final Response =================
+        List<InvoiceGroupData> dataList = new List<InvoiceGroupData>();
+        // grp; // ✅ ONLY ONE OBJECT
+        
+        InvoiceResponseWrapper res = new InvoiceResponseWrapper( true,'Invoice data',grp);
+        
         RestContext.response.statusCode = 200;
-        RestContext.response.responseBody = Blob.valueOf(JSON.serialize(new Map<String, Object>{
-            'status' => false,
-                'message' => message
-                }));
+        RestContext.response.responseBody = Blob.valueOf(JSON.serialize(res));
+        
+        log.Status__c = 'SUCCESS';
+        log.Response__c = JSON.serialize(res);
+        insert log;
+        } catch (Exception e) {
+        
+        sendErrorResponse('Error: ' + e.getMessage());
+        // sendError('Failed to fetch invoice data: ' + e.getMessage(), log);
     }
-    /*
+    
+}
+
+
+// ================= Input Wrapper =================
+public class GetInvoiceRequestWrapper {
+    public String userId;
+    public List<String> bookingId;
+    public String invoiceNumber;
+}
+
+// ================= Response Wrappers =================
+public class BookingDetail {
+    public String unit;
+    public Decimal agreementAmount;
+    public Datetime bookingDate;
+}
+
+public class InvoiceGroupData {
+    public String projectName;
+    public Decimal agreementAmount;
+    public Decimal commissionAmount;
+    public Decimal cancelledBookingCommissionAmount;
+    public Decimal tds;
+    public Decimal gst;
+    public Decimal netInvoiceAmount;
+    public Date invoiceDate ;
+    Public String invoiceId ;
+    public String uploadDocumentURL;
+    public String documentName;
+    public List<BookingDetail> bookingDetails;
+    public List<String> bookingId;
+}
+
+public class InvoiceResponseWrapper {
+    public Boolean status;
+    public String message;
+    public InvoiceGroupData data;
+    
+    public InvoiceResponseWrapper(Boolean s, String m, InvoiceGroupData d) {
+        status = s;
+        message = m;
+        data = d;
+    }
+}
+
+// ================= Error Helper =================
+
+
+private static void sendErrorResponse(String message) {
+    RestContext.response.statusCode = 200;
+    RestContext.response.responseBody = Blob.valueOf(JSON.serialize(new Map<String, Object>{
+        'status' => false,
+            'message' => message
+            }));
+}
+/*
 @HttpPost
 global static void getInvoiceData() {
 
@@ -343,5 +385,5 @@ insert log;
 }
 
 */
-    
+
 }

@@ -127,6 +127,12 @@ public without sharing class RoundRobinHandler {
         Map<id,user>  rrMemberMapToUpdate = new  Map<id,user> ();
           System.debug('=== Starting to iterate Related_Source__c records, total: ' + RSList.size() + ' ===');
         for(Related_Source__c rs:RSList){  
+            // Skip RR if already assigned
+            if (rs.Lead_Assigned__c == true) {
+                System.debug('Skipping RR for already assigned RS: ' + rs.Id);
+                continue;
+            }
+
             string project = rs.Source_Type__c;
              System.debug('=== project: ' + project + ' ===');
             System.debug('=== Lead_Assigned__c: ' + rs.Lead_Assigned__c + ' ===');

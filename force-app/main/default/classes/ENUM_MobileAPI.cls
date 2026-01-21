@@ -116,7 +116,7 @@ response.data.supportType.add(stv);
         response.data.facingStatus = getPicklistValues('Project__c', 'Facing__c');
         response.data.invoiceStatus = getPicklistValues('Invoice__c', 'Invoice_Status__c');
         response.data.announcementType = getPicklistValues('Announcement__c', 'Announcement_Type__c');
-        response.data.paymentStatus = getPicklistValues('Payment__c', 'Payment_Status__c');
+        response.data.paymentStatus = getPicklistValues('Payment_Line_Item__c', 'Payament_Status__c');
         
         // Set links from custom labels
         response.data.TDSPercentage = '5.3';

@@ -96,6 +96,7 @@ global without sharing class CreateInvoice_MobileAPI {
             invoice.TDS__c = input.tds;
             invoice.GST__c = input.gst;
             invoice.Net_Invoice_Amount__c = input.netInvoiceAmount;
+			 invoice.Invoice_Date__c = Date.ValueOf(input.invoiceDate);
 
             if (isUpdate) {
                 update invoice;

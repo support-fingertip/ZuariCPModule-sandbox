@@ -62,6 +62,9 @@ public without sharing class ChannelPartnerController {
             if (fieldValues.containsKey('Company_RERA_No__c')) {
                 cp.Company_RERA_No__c = (String) fieldValues.get('Company_RERA_No__c');
             }
+            if (fieldValues.containsKey('Active_Medium__c')) {
+                cp.Active_Medium__c = (String) fieldValues.get('Active_Medium__c');
+            }
             if (fieldValues.containsKey('RERA_Validity__c')) {
                 // Handle date field
                 Object dateValue = fieldValues.get('RERA_Validity__c');
@@ -73,7 +76,7 @@ public without sharing class ChannelPartnerController {
             }
             
             insert cp;
-            
+            System.debug('hello');
             // CRITICAL FIX: Return the ID, not the Name
             return cp.Id;
             

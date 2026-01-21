@@ -1,0 +1,104 @@
+<aura:component controller="RelatedSourceBulkOwnerAuraCtrl"
+                implements="flexipage:availableForAllPageTypes,force:appHostable"
+                access="global">
+    <!-- Filters -->
+    <aura:attribute name="fromDate" type="Date"/>
+    <aura:attribute name="toDate" type="Date"/>
+    <aura:attribute name="fromUserId" type="Id"/>
+    <aura:attribute name="allocatedProject" type="String"/>
+    <aura:attribute name="toUserId" type="Id"/>
+    <!-- Data -->
+    <aura:attribute name="records" type="Related_Source__c[]"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="selectedIds" type="Id[]"/>
+    <aura:attribute name="userOptions" type="List"/>
+    <aura:attribute name="allocatedProjectOptions" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card title="Bulk Owner Update – Related Source">
+        <div class="slds-p-around_large">
+            <!-- Filter Section -->
+            <div class="slds-box slds-theme_shade slds-p-around_medium slds-m-bottom_medium">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Search Filters</h3>
+                
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Date Range -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning:input type="date" label="From Date" value="{!v.fromDate}"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning:input type="date" label="To Date" value="{!v.toDate}"/>
+                    </div>
+                    
+                    <!-- User and Project Filters -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-top_small">
+                        <lightning:combobox label="From User" 
+                                            value="{!v.fromUserId}"
+                                            options="{!v.userOptions}" 
+                                            placeholder="All Users"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-top_small">
+                        <lightning:combobox label="Allocated Project" 
+                                            value="{!v.allocatedProject}"
+                                            options="{!v.allocatedProjectOptions}" 
+                                            placeholder="All Projects"/>
+                    </div>
+                </div>
+                
+                <!-- Search Button -->
+                <div class="slds-m-top_medium">
+                    <lightning:button label="Search Records" 
+                                      variant="brand" 
+                                      iconName="utility:search"
+                                      onclick="{!c.searchRecords}"
+                                      class="slds-m-right_small"/>
+                </div>
+            </div>
+            
+            <!-- Owner Update Section -->
+            <div class="slds-box slds-theme_shade slds-p-around_medium slds-m-bottom_medium">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Owner Update</h3>
+                
+                <div class="slds-grid slds-gutters slds-grid_vertical-align-end">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3">
+                        <lightning:combobox label="New Owner" 
+                                            value="{!v.toUserId}"
+                                            options="{!v.userOptions}" 
+                                            placeholder="Select New Owner"
+                                            required="true"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                        <lightning:button label="Update Owner" 
+                                          variant="brand" 
+                                          iconName="utility:change_owner"
+                                          onclick="{!c.updateOwner}"
+                                          disabled="{!empty(v.toUserId)}"/>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <aura:if isTrue="{!v.records.length > 0}">
+                <div class="slds-m-bottom_medium">
+                    <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small">Search Results ({!v.records.length})</h3>
+                    </div>
+                    <lightning:datatable keyField="Id" 
+                                         data="{!v.records}" 
+                                         columns="{!v.columns}" 
+                                         onrowselection="{!c.handleRowSelection}"
+                                         hideCheckboxColumn="false"/>
+                    
+                    <aura:if isTrue="{!v.selectedIds.length > 0}">
+                        <div class="slds-m-top_small">
+                            <p class="slds-text-body_small slds-text-color_success">
+                                <lightning:icon iconName="utility:check" size="xx-small" class="slds-m-right_xx-small"/>
+                                {!v.selectedIds.length} record(s) selected for owner update
+                            </p>
+                        </div>
+                    </aura:if>
+                </div>
+            </aura:if>
+        </div>
+    </lightning:card>
+</aura:component>

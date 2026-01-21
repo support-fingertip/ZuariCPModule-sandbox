@@ -106,5 +106,11 @@ trigger SiteVisitTrigger on Site_Visit__c (before insert,After Update, after ins
     
     
     if(Trigger.IsUpdate && Trigger.IsAfter){
+
+           /* ============================================================
+       FOR NOTIFICATION RECORD CREATION
+        ============================================================ */
+        NotificationHandler.createNotificationRecordsForSiteVisit (Trigger.new, Trigger.oldMap);
+      
     }
 }

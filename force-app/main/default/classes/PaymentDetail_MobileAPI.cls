@@ -75,6 +75,7 @@ global without sharing class PaymentDetail_MobileAPI {
                 return;
             }
             Channel_Partner__c cp = lstcp[0];
+            System.debug(cp);
             // Fetch Payment Line Item
             List<Payment_Line_Item__c> lstpli = [SELECT Id, Name, Payment_Line_Item__c, Project_name__c, Flat_Number__c,
                                                  Booking_Date__c, Payament_Status__c, Booking_Amount__c,

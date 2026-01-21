@@ -62,14 +62,14 @@ global without sharing class AnnouncementList_MobileAPI {
                 }
                 LeadResponseWrapper response = new LeadResponseWrapper();
                 response.status = true;
-                response.message = 'Follow-ups Data';
+                response.message = 'Announcements Data';
                 response.data = responseList;
                 
                 RestContext.response.statusCode = 200;
                 RestContext.response.responseBody =
                     Blob.valueOf(JSON.serialize(response));
                 
-                log.Response__c = 'Follow Up fetched successfully';
+                log.Response__c = 'Announcement Data fetched successfully';
                 log.Status__c = 'SUCCESS';
                 insert log;
                 return;
