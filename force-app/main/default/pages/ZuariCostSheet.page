@@ -1,0 +1,201 @@
+<apex:page standardController="Quote__c" extensions="getQuoteData" showHeader="false" standardStylesheets="false"  applyBodyTag="false" applyHtmlTag="false" renderAs="pdf" >
+    <html>
+        <head>
+            <style type="text/css" >
+                body{
+                font-family:font-family:Arial Unicode MS !important;
+                
+                }
+                
+               
+                @page {
+                size:A4 portrait;  
+                border:1px solid black;
+                counter-increment: pages;
+                @bottom-left {
+                content: element(footer);
+                padding-bottom: 20px;
+                
+                }  
+                }
+                div.footer {
+                display: block;
+                padding: 1px 0;
+                position: running(footer);
+                border-bottom:2px solid black;
+                border-left:2px solid black;
+                border-right:2px solid black;
+                
+                width: 100%;    
+                margin-top: -8px;
+                }
+                .pagenumber:before {
+                content: counter(page);
+                }
+                .pagecount:before {
+                content: counter(pages);
+                }
+            </style>
+            
+            </head>
+            <body>
+              
+                <table width="100%" style="font-size: 12px;text-align:center"  cellpadding="0" cellspacing="0" >
+                    <tr>
+                         <td><img src="{!$Resource.Zuari}" width="100px" height="60" /></td>
+                        
+                         
+                       </tr>
+                  </table>
+                <div style="page-break-after:auto;">
+                    <table style="font-size: 14px;font-family: SansSerif" cellpadding="0" cellspacing="0"  border="1" width="100%" height="100%" >
+                         <tr colspan="3"><td style="text-align:right"><b>Date-</b>
+                             
+                             <apex:outputText value="{0,date,dd/MM/yy}"> <apex:param value="{!Quote__c.Quote_date__c}" /> </apex:outputText></td></tr>
+                
+                        <tr colspan="3"><td>
+                            <b>Client Name:-&nbsp;{!Quote__c.SLead__r.LastName}</b></td>
+                            </tr>
+                        <tr colspan="3"><td><b>Unit No:&nbsp;{!Quote__c.Unit__r.Name}</b></td> </tr>
+                        <tr colspan="3"><td><b>Tower: &nbsp;{!Quote__c.Tower__c}</b></td> </tr>
+                        <tr colspan="3"><td><b>Facing:&nbsp;{!Quote__c.Unit_Facing_Direction__c}</b></td> </tr>
+                        </table>
+                        <table style="font-size: 14px;font-family: SansSerif;" cellpadding="0" cellspacing="0"  border="1" width="100%" height="100%" > 
+                            
+                        
+                        <tr ><td width="70%" style="text-align:center"><b>Type of Appartment</b></td>
+                        <td> </td>
+                        <td width="20%" style="text-align:center"><b>{!Quote__c.BHK_Type__c}</b></td></tr>
+                        <tr><td>Super Built-up Area (SFt)	</td>
+                        <td></td>
+                        <td style="text-align:right">{!Quote__c.Super_Built_UpArea__c}</td></tr>
+                        <tr><td>Basic Rate Per SqFt 	</td>
+                        <td></td>
+                        <td style="text-align:right">{!Quote__c.Rate_per_sqft__c}</td></tr>
+                        <tr><td>Floor Rise Charges (FRC) @Rs.20/- per floor - 6th floor onwards	</td>
+                        <td></td>
+                        <td style="text-align:right">{!Quote__c.Floor_Rise_Charges_Rate__c}</td></tr>
+                        <tr><td>East Facing (per SFT)	</td>
+                        <td></td>
+                        <td style="text-align:right">{!Quote__c.Facing_charges__c}</td></tr>
+                        <tr><td>Corner Charges (per SFT)	</td>
+                        <td></td>
+                        <td style="text-align:right">{!Quote__c.Corner_Charges__c}</td></tr>
+                        <tr><td>Total Basic Price per SFT	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Rate_sq_Ft__c}" /> </apex:outputText>
+                            </td></tr>
+                        <tr><td>Charges for Amenities 	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.amenities_charges__c}" /> </apex:outputText>
+                            </td></tr>
+                        <tr><td>Water, Electricity, GAS and Infrastructure Charges</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Water_Electricity_Charges__c}" /> </apex:outputText>
+                            </td></tr>
+                        <tr><td>Car Parking Charges (2 Parking Slots)	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Car_Parking__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td>Agreement Value	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Agreement_Value_Before_GST__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td>GST on Agreement Value @ 5%	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.GST_On_agreement_Value_Actual__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td><b>Total Agreement Value</b>	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Agreement_Value_after_GST__c}" /> </apex:outputText>
+                            </td></tr>
+                        <tr><td colspan="3"><br/><b>Other Charges</b></td></tr>
+                        
+                        <tr>
+                            <td>Maintenance Charges @Rs.4/- per SFT (Monthly) paid for 2 Years	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Total_Maintenance_Amount__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td>Corpus Fund @Rs.100/- per SFT (One time Charges)	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Total_Corpus_Fund__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td>Legal and Documentation Charges	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Legal_Documentation_Charges__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td>Total Other Charges	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Sub_Total_Of_Other_Charges__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td>GST on Other Charges @ 18%	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.GST_On_Other_Charges_Actual__c}" /> </apex:outputText>
+                                </td></tr>
+                        <tr><td colspan="3"><br/></td></tr>
+                        <tr><td><b>Total Other Charges with Taxes</b>	</td>
+                        <td></td>
+                        <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.Other_Charges_after_GST__c}" /> </apex:outputText>
+                                </td></tr>
+                            
+                        <tr ><td colspan="3"><br/></td></tr> 
+                            <tr><td><b>Total Cost of the Unit with Taxes</b>	</td>
+                            <td></td>
+                            <td style="text-align:right"><apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!Quote__c.GRAND_TOTAL__c}" /> </apex:outputText>
+                                </td></tr>
+                            <tr><td colspan="3"><br/></td></tr>
+                            <tr><td colspan="3" style="text-align:center" ><b>SCHEDULE OF PAYMENT	</b>		</td></tr>
+                            
+                    </table>
+                     <table style="font-size: 14px;font-family: SansSerif;" cellpadding="0" cellspacing="0"  border="1" width="100%">
+                        <!--      <tr><td>Booking Amount</td>
+                        <td  style="border-bottom: 0px"></td>
+                        <td  style="border-bottom: 0px"></td>
+                        <td>{!Quote__c.Booking_Amount__c}</td></tr> -->
+                        <apex:repeat value="{!qout.Payment_Schedules__r}"  var="p">
+                            <tr >
+                                <td >{!p.Name} </td>
+                            <!--      <apex:outputText rendered="{!p.S_No__c == 1}"> 
+                                    <td align="center"  style="border-top: 0px"><b>ASAP</b>&nbsp;</td>
+                                    <td align="center" style="border-top: 0px"> <apex:outputText value="{0, Number}"> <apex:param value="{!p.Payment_percent__c}" /></apex:outputText></td>
+                                <td  align="center"> <apex:outputText value="{0, Number}"> <apex:param value="{!p.Balance_Booking_Advance_Amount__c}" /></apex:outputText>  </td>
+                                </apex:outputText> 
+                                     <apex:outputText rendered="{!p.S_No__c != 1}">
+                                </apex:outputText> -->
+                                 <td  align="center"> <apex:outputText value="{0, Number}"> <apex:param value="{!p.Payment_percent__c}" /></apex:outputText>  </td>
+                                <td  align="right"> 
+                                    <apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!p.Amount1__c}" /> </apex:outputText>
+                            
+                                      </td>
+                            
+                                
+                               </tr>
+                            
+                        </apex:repeat>
+                        
+                             <tr>
+                                 <td style="text-align:left" >Total</td>
+                                 <td style="text-align:center" ><apex:outputText value="{0, Number}"> <apex:param value="{!totalPercent}" /></apex:outputText>%</td>
+                                 <td style="text-align:center" >
+                                       <apex:outputText value="{0, number, ###,###,###}"><apex:param value="{!totalAmount}" /> </apex:outputText>
+                            
+                                 </td>
+
+
+                         </tr>                        
+                    </table>
+                
+                    <table  width="100%" style="font-size: 10px;">
+                        <tr><td style="text-align:center"> <b>Terms &amp; Conditions</b></td></tr>
+                        <tr><td>•  TDS payment is the responsibility of the Buyer. TDS @1% on the total sale consideration shall be deducted and paid directly to the IT Department through online process on bilders PAN with very installment.			</td></tr>
+                       <tr><td>•  Registration, Stamp Duty charges, Mutation Fees and other Statutory Fees as per actuals at the time of registration. 			</td></tr>
+                        <tr><td>•  Maintenance Charges and Corpus Fund to be paid at the time of Possession/Handover.</td></tr>
+                        <tr><td>•  All Other Charges (as mentioned above) inclusive of GST will be paid by the the customer at the time of Possession/Handover.			</td></tr>
+                        <tr><td>•  Prices are subject to change without any prior notice.			</td></tr>
+                    </table>
+                   </div>
+               
+            </body>
+        
+    </html>
+</apex:page>
