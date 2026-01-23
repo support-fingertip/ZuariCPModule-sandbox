@@ -53,6 +53,9 @@ public class AddRelatedSourceNoteController {
 
        
         insert comment;
+        system.debug('=========== updating folowup to completed  call comment is created =========== ');
+        completeRelatedSourceFollowups(rsRecord.Id);
+        system.debug('=========== updated folowup to completed  call comment is created ===========');
     }
 
      @AuraEnabled
@@ -122,5 +125,75 @@ public static List<String> fetchLeadLastNotes(String relatedSourceId) {
     
     return formattedNotes;
 }
+    
+private static void completeRelatedSourceFollowups(Id relatedSourceId) {
+    System.debug('>>> completeRelatedSourceFollowups called for RelatedSourceId: ' + relatedSourceId);
+
+    if (relatedSourceId == null) {
+        System.debug('>>> RelatedSourceId is null, exiting.');
+        return;
+    }
+
+    String mode = System.Label.Followup_Completion_Mode; // "today" or "all" or "True"
+    System.debug('>>> Custom Label Followup_Completion_Mode value: ' + mode);
+
+    Datetime nowDt = System.now();
+    Date today = nowDt.date();
+    System.debug('>>> Current Datetime: ' + nowDt + ' | Today: ' + today);
+
+    List<Follow_up__c> followupsToComplete = new List<Follow_up__c>();
+
+    if (mode == 'True') {
+        System.debug('>>> Mode is True: completing only today\'s followups whose time has passed');
+
+        // Query all scheduled follow-ups for this Related Source
+        List<Follow_up__c> allFollowups = [
+            SELECT Id, Status__c, Comments__c, Scheduled_Date__c
+            FROM Follow_up__c
+            WHERE Related_Source__c = :relatedSourceId
+            AND Status__c = 'Scheduled'
+            AND Scheduled_Date__c != null
+        ];
+        System.debug('>>> Total scheduled followups fetched: ' + allFollowups.size());
+
+        // Filter in Apex: only today's datetime that has already passed
+        for (Follow_up__c fu : allFollowups) {
+            System.debug('>>> Checking followup Id: ' + fu.Id + ' | Scheduled_Date__c: ' + fu.Scheduled_Date__c);
+            if (fu.Scheduled_Date__c.date() == today && fu.Scheduled_Date__c <= nowDt) {
+                System.debug('>>> Adding followup to complete: ' + fu.Id);
+                followupsToComplete.add(fu);
+            }
+        }
+
+    } else if (mode == 'False') {
+        System.debug('>>> Mode is all: completing all scheduled followups');
+
+        // Normal flow: all scheduled follow-ups
+        followupsToComplete = [
+            SELECT Id, Status__c, Comments__c
+            FROM Follow_up__c
+            WHERE Related_Source__c = :relatedSourceId
+            AND Status__c = 'Scheduled'
+        ];
+        System.debug('>>> Total followups to complete: ' + followupsToComplete.size());
+    } else {
+        System.debug('>>> Mode does not match "True" or "all", no followups will be completed');
+    }
+
+    // Mark as completed
+    for (Follow_up__c fu : followupsToComplete) {
+        System.debug('>>> Completing followup Id: ' + fu.Id);
+        fu.Status__c = 'Completed';
+        fu.Comments__c = 'Called the customer, added call comments';
+    }
+
+    if (!followupsToComplete.isEmpty()) {
+        System.debug('>>> Updating followups: ' + followupsToComplete);
+        update followupsToComplete;
+    } else {
+        System.debug('>>> No followups to update');
+    }
+}
+
 
 }

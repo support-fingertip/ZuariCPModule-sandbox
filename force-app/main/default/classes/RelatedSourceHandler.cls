@@ -548,7 +548,7 @@ public without sharing class RelatedSourceHandler {
     
     // Method to map Lead to Related_Source__c
     public static Related_Source__c mapLeadToRelatedSource(Lead nld,String leadType, String typeOfLead) {
-        
+        /*
        RecordType leadRT = [
             SELECT DeveloperName
             FROM RecordType
@@ -560,6 +560,26 @@ public without sharing class RelatedSourceHandler {
             FROM RecordType
             WHERE SobjectType = 'Related_Source__c'
             AND DeveloperName = :leadRT.DeveloperName
+            LIMIT 1
+        ];
+        */
+        // Fetch custom label value
+        String sourceType = System.Label.RelatedSource_RecordType; // Example label: "PreSales" or "Sales"
+        
+        // Determine the DeveloperName of the Related_Source__c record type
+        String rsDevName;
+        if (sourceType == 'PreSales') {
+            rsDevName = 'Pre_Sales';
+        } else {
+            rsDevName = 'Sales';
+        }
+        
+        // Query the Related_Source__c RecordType Id
+        RecordType rsRT = [
+            SELECT Id 
+            FROM RecordType 
+            WHERE SObjectType = 'Related_Source__c' 
+            AND DeveloperName = :rsDevName
             LIMIT 1
         ];
         String fullName = 
@@ -769,7 +789,8 @@ public without sharing class RelatedSourceHandler {
         rs.Location_Preferred__c = nld.Location__c;
         rs.LiveChat_URL__c = nld.LiveChat_URL__c;
         rs.LinkedIn_Question__c = nld.LinkedIn_Question__c;
-        rs.Lead_status1__c = nld.Lead_status__c;
+        //rs.Lead_status1__c = nld.Lead_Status__c;
+       //rs.Lead_status1__c = 'New';
         rs.LinkedIn_Answer__c = nld.LinkedIn_Answer__c;
         if(typeOfLead == ''){
             if(nld.Main_lead_status__c == 'Rejected' || nld.Main_lead_status__c == 'Booked'|| nld.Main_lead_status__c =='Closed Lost' || nld.Main_lead_status__c =='Unqualified'){

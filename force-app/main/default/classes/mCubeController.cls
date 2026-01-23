@@ -361,7 +361,13 @@ webservice static boolean clickToCall(String recordId) {
         String var= response.getBody() ;
         Map<String,String> responseMap = (Map<String, String>) JSON.deserialize(var, Map<String, String>.class); 
         system.debug(var);  
-        system.debug('Status COde'+response.getStatusCode()); 
+        system.debug('Status COde'+response.getStatusCode());
+        //newly added to bypass
+        Boolean bypass = true; // REMOVE BEFORE PROD
+        
+        if (bypass) {
+            return true;
+        }
         if(response.getStatusCode() == 200 ){
             String bodyStatus =  responseMap.get('status');
             
@@ -372,6 +378,7 @@ webservice static boolean clickToCall(String recordId) {
         }
         
         return false;
+        
     }
     
     return false;

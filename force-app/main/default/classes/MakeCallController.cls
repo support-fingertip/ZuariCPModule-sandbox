@@ -96,27 +96,70 @@ public without sharing class MakeCallController {
          }
         return null;
     } 
- /*   
+   
     @AuraEnabled
     public static void updateLastNote(String leadId, String newNote, Boolean isPrimary, Boolean isSecondary, datetime followUpDate, String followUpSubject, datetime siteVisitScheduledDate) {
-        Lead leadRecord = [SELECT Id,,Allocated_Project__c FROM Lead WHERE Id = :leadId LIMIT 1];
-        User us = [select id,name from User where id =: userInfo.getUserId()];
+        Related_Source__c leadRecord = [SELECT Id,Last_Note__c,Allocated_Project__c FROM Related_Source__c WHERE Id = :leadId LIMIT 1];
+        system.debug('newNote'+newNote);
+        system.debug('isPrimary' + isPrimary);
+        User us = [select id,name,Profile.Name from User where id =: userInfo.getUserId()];
+        // ================================
+        // Current datetime in IST
+        // ================================
         Datetime dt = Datetime.now();
-        Timezone tz = Timezone.getTimeZone('Asia/Kolkata');
-        //dt = dt.addSeconds(tz.getOffset(dt)/1000);
-        String strTimeInAMorPM = dt.format('MMMMM dd, yyyy hh:mm:ss a');
-        if(isPrimary == true){
-            Integer noteCount = 1;
-            if (leadRecord.Comments__c == null) {
-                leadRecord.Comments__c = '';
-            } else if (!leadRecord.Comments__c.trim().equals('')) {
-                List<String> notes = leadRecord.Comments__c.split('\n');
-                noteCount = notes.size() + 1;
-            }
+        String strTimeInAMorPM = dt.format('dd-MM-yy HH:mm a', 'Asia/Kolkata');
+        
+        System.debug(' Current Datetime (System): ' + dt);
+        System.debug(' Formatted IST Datetime: ' + strTimeInAMorPM);
+        
+        // ================================
+        // Handle numbering
+        // ================================
+        Integer noteCount = 1;
+        System.debug(' Initial noteCount: ' + noteCount);
+        System.debug(' Existing Last_Note__c BEFORE update: ' + leadRecord.Last_Note__c);
+        
+        if (leadRecord.Last_Note__c == null) {
+            System.debug(' Last_Note__c is NULL, initializing to empty string');
+            leadRecord.Last_Note__c = '';
+        } 
+        else if (!leadRecord.Last_Note__c.trim().equals('')) {
+            List<String> notes = leadRecord.Last_Note__c.split('\n');
+            noteCount = notes.size() + 1;
             
-            leadRecord.Comments__c += '\nNote ' + noteCount + ': ('+us.Name+')' + ' - (' + strTimeInAMorPM + ') :      ' + newNote;
+            System.debug(' Existing notes count: ' + notes.size());
+            System.debug(' Updated noteCount: ' + noteCount);
+        } 
+        else {
+            System.debug(' Last_Note__c exists but is EMPTY after trim');
         }
-        if(isSecondary == true){
+        
+        // ================================
+        // Update fields
+        // ================================
+        leadRecord.Execuive_Count__c = noteCount;
+        System.debug(' Execuive_Count__c set to: ' + noteCount);
+        
+        String noteToAppend =
+            '\nCall Summary ' + noteCount + ': ' +
+            us.Name + ' [' + strTimeInAMorPM + ']: ' +
+            newNote;
+        
+        System.debug(' Note being appended: ' + noteToAppend);
+        
+        leadRecord.Last_Note__c += noteToAppend;
+        
+        System.debug(' Last_Note__c AFTER update: ' + leadRecord.Last_Note__c);
+        // Create Call_Comments__c record
+        Call_Comments__c comment = new Call_Comments__c();
+        comment.Comments__c = newNote;
+        comment.User_Profile__c = us.Profile.Name;
+        comment.Related_Source__c = leadRecord.Id;
+        comment.Created_User__c = us.Id;
+        comment.Created_Date__c = System.now();
+        insert comment;
+          //}
+       /* if(isSecondary == true){
             Integer noteCount = 1;
             if (leadRecord.CommentsSecondary__c == null) {
                 leadRecord.CommentsSecondary__c = '';
@@ -126,7 +169,7 @@ public without sharing class MakeCallController {
             }
             
             leadRecord.CommentsSecondary__c += '\nNote ' + noteCount + ': ('+us.Name+')' + ' - (' + strTimeInAMorPM + ') :      ' + newNote;
-        }
+        }*/
         system.debug('is follou Up created');
         if(followUpDate != null){
             system.debug('is follou Up created');
@@ -139,7 +182,7 @@ public without sharing class MakeCallController {
             }
             fp.Scheduled_Date__c = followUpDate.addMinutes(1);
             
-            fp.SLead__c = leadId;
+            fp.Related_Source__c = leadId;
             insert fp;
         }
             update leadRecord;
@@ -149,10 +192,10 @@ public without sharing class MakeCallController {
              Site_Visit__c fp = new Site_Visit__c();
              fp.Project__c = leadRecord.Allocated_Project__c;
              fp.Date__c = siteVisitScheduledDate.addMinutes(1);
-             fp.SLead__c = leadId;
+             fp.Related_Source__c = leadId;
              insert fp;
         }
-    }*/
+    }
     
     
        @auraEnabled

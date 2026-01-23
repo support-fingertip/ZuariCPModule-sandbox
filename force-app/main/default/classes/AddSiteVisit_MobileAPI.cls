@@ -78,17 +78,17 @@ global without sharing class AddSiteVisit_MobileAPI {
 
             /* ---------------- Validate Lead ---------------- */
             Lead leadRec;
-            try {
+           /* try {
                 leadRec = [SELECT Id, Lead_ID__c FROM Lead WHERE Lead_ID__c = :input.leadId  AND Channel_Partner__r.User_Id__c = :input.userId LIMIT 1];
             }
             catch (Exception e) {
                 sendError('Invalid Lead Id', log, logInserted);
                 return;
-            }
+            }*/
              // 2. Fetch latest related source
             Related_Source__c latestSource;
             
-            List<Related_Source__c> sourceList = [SELECT Id,CreatedDate  FROM Related_Source__c   WHERE SLead__c = :leadRec.Id AND Is_Locked__c = FALSE
+            List<Related_Source__c> sourceList = [SELECT Id,CreatedDate,SLead__c  FROM Related_Source__c   WHERE Lead_Id__c = :input.leadId AND Is_Locked__c = FALSE
                 ORDER BY CreatedDate DESC LIMIT 1];
             
             if (!sourceList.isEmpty()) {
@@ -97,7 +97,7 @@ global without sharing class AddSiteVisit_MobileAPI {
 
             /* ---------------- Create Site Visit ---------------- */
             Site_Visit__c sv = new Site_Visit__c();
-            sv.SLead__c = leadRec.Id;
+            sv.SLead__c = latestSource.SLead__c;
             sv.Date__c = input.scheduleDate;
             sv.Feedback__c = input.notes;
             sv.Related_Source__c = latestSource.Id;

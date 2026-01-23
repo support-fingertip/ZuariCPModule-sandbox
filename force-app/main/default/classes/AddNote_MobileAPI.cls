@@ -50,8 +50,7 @@ global without sharing class AddNote_MobileAPI {
         
         try {
             /* ---------------- Deserialize Input ---------------- */
-            AddNoteWrapper input =
-                (AddNoteWrapper) JSON.deserialize(requestBody, AddNoteWrapper.class);
+            AddNoteWrapper input = (AddNoteWrapper) JSON.deserialize(requestBody, AddNoteWrapper.class);
             System.debug('Input JSON: ' + JSON.serialize(input));
             
             /* ---------------- Mandatory Validation ---------------- */
@@ -79,7 +78,7 @@ global without sharing class AddNote_MobileAPI {
             }
             
             /* ---------------- Validate Lead ---------------- */
-            Lead leadRec;
+           /* Lead leadRec;
             try {
                 leadRec = [
                     SELECT Id, Lead_ID__c
@@ -91,15 +90,15 @@ global without sharing class AddNote_MobileAPI {
             } catch (Exception e) {
                 sendError('Invalid Lead Id', log, logInserted);
                 return;
-            }
+            }*/
             // 2. Fetch latest related source
             Related_Source__c latestSource;
             
             List<Related_Source__c> sourceList = [
-                SELECT Id,CreatedDate
-                FROM Related_Source__c
-                WHERE SLead__c = :leadRec.Id
-                ORDER BY CreatedDate DESC
+               SELECT Id,CreatedDate,SLead__c
+                 FROM Related_Source__c
+                 WHERE Lead_Id__c = :input.leadId AND Is_Locked__c = FALSE
+               ORDER BY CreatedDate DESC
                 LIMIT 1
             ];
             
@@ -109,7 +108,7 @@ global without sharing class AddNote_MobileAPI {
             
             /* ---------------- Create Note ---------------- */
             Call_Comments__c CC = new Call_Comments__c();
-            CC.Lead__c = leadRec.Id;
+            CC.Lead__c = latestSource.SLead__c;
             CC.Related_Source__c = latestSource.Id;
             CC.Created_Date__c = input.scheduleDate;
             CC.Comments__c = input.notes;

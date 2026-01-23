@@ -133,7 +133,7 @@ system.debug(rl);
 
             // Additional Notes
             List<AdditionalNoteInfo> additionalNotes = new List<AdditionalNoteInfo>();
-            if (!relatedSourceIds.isEmpty()) {
+            if (rl.id != null) {
                 for (Call_Comments__c an : [ SELECT Id, Name, Related_Source__c, Lead__c, Comments__c, Created_Date__c,Title__c FROM Call_Comments__c
                     WHERE Related_Source__c =:rl.Id  ORDER BY Created_Date__c DESC   ]) {
                     AdditionalNoteInfo ani = new AdditionalNoteInfo();

@@ -80,7 +80,7 @@ global without sharing class AddFollowUp_MobileAPI {
 
             /* ---------------- Validate Lead ---------------- */
             Lead leadRec;
-            try {
+          /*  try {
                 leadRec = [
                     SELECT Id, Lead_ID__c
                     FROM Lead
@@ -90,14 +90,14 @@ global without sharing class AddFollowUp_MobileAPI {
             } catch (Exception e) {
                 sendError('Invalid Lead Id', log, logInserted);
                 return;
-            }
+            }*/
             // 2. Fetch latest related source
             Related_Source__c latestSource;
             
             List<Related_Source__c> sourceList = [
-                SELECT Id,CreatedDate
+                SELECT Id,CreatedDate,SLead__c
                 FROM Related_Source__c
-                WHERE SLead__c = :leadRec.Id AND Is_Locked__c = FALSE
+                WHERE Lead_Id__c = :input.leadId AND Is_Locked__c = FALSE
                 ORDER BY CreatedDate DESC
                 LIMIT 1
             ];
@@ -108,7 +108,7 @@ global without sharing class AddFollowUp_MobileAPI {
 
             /* ---------------- Create Follow-Up ----------------*/
             Follow_Up__c fu = new Follow_Up__c();
-            fu.SLead__c = leadRec.Id;
+            fu.SLead__c = latestSource.SLead__c;
             fu.Related_Source__c = latestSource.Id;
             fu.Scheduled_Date__c = input.scheduleDate;
             fu.Subject__c = input.subject;

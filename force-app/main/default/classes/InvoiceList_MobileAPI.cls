@@ -83,7 +83,7 @@ global without sharing class InvoiceList_MobileAPI {
 
             for (Invoice__c inv : invoiceList) {
                 InvoiceListWrapper w = new InvoiceListWrapper();
-                w.id = inv.Id;
+                w.id = inv.Name;
                 w.invoiceNumber = inv.Name;
                 w.agreementAmount = inv.Agreement_Amount__c;
                 w.commissionAmount = inv.Commission_Amount__c;
@@ -140,7 +140,7 @@ global without sharing class InvoiceList_MobileAPI {
 
     // ---------- Invoice Wrapper ----------
     public class InvoiceListWrapper {
-        public Id id;
+        public String id;
         public String invoiceNumber;
         public Decimal agreementAmount;
         public Decimal commissionAmount;

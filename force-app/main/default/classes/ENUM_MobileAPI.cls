@@ -235,6 +235,7 @@ response.data.supportType.add(stv);
         'Cancelled'              => '0xFFC10007',
         'Close'                  => '0xFFC10007',
         'High'                   => '0xFFC10007',
+        'Closed Lost'                   => '0xFFC10007',
 
         // ---------- Priority ----------
         'Low'                    => '#64B5F6'

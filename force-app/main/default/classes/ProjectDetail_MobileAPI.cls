@@ -58,7 +58,7 @@ global without sharing class ProjectDetail_MobileAPI {
                 return;
             }
             
-            Project__c project = [ SELECT Id,Project_Id__c,Project__c, Project_Status__c,Name,Project_Address__c,RERA_NO__c,Available_Units__c,Total_Units__c,Starting_Price__c,
+            Project__c project = [ SELECT Id,Project_Id__c,Project__c, Project_Status__c,Name,Project_Address__c,RERA_NO__c,Available_Units__c,Total_Units__c,Starting_Price__c,BHK_Type__c,
                                   End_Price_Range__c,Offer_Precentage__c,Video_URL__c,Project_Location__c,Unit_Type__c,Facing__c,Amenties__c,Project_Location__Latitude__s,Project_Location__Longitude__s FROM Project__c WHERE Project_Id__c = :prjId LIMIT 1  ];
             
             if (project == null) {
@@ -175,7 +175,7 @@ global without sharing class ProjectDetail_MobileAPI {
             data.amenities     = parseMultiPicklist(project.Amenties__c);
             
             // If BHKTypes is same as Unit_Type__c or another field
-            data.BHKTypes = parseMultiPicklist(project.Unit_Type__c);
+            data.BHKTypes = parseMultiPicklist(project.BHK_Type__c);
             
             // data.brochures  = new List<ProjectDocument>();
             data.floorPlans = florplanlst;

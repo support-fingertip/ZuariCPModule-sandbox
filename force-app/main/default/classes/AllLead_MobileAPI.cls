@@ -226,7 +226,7 @@ global without sharing class AllLead_MobileAPI {
                      for (Related_Source__c l : Relatedlst) {
                     LeadData ldResp = new LeadData();
                     
-                    ldResp.id = l.Lead_ID__c; // or keep String if preferred
+                    ldResp.id = l.Lead_Id__c; // or keep String if preferred
                     ldResp.personName = l.Name__c;
                     ldResp.personPhoneNumber = l.Primary_Phone__c;
                     ldResp.projectName = l.Allocated_Project__c;
