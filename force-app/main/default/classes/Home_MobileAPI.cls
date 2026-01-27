@@ -173,39 +173,28 @@ global without sharing class Home_MobileAPI {
             response.message = 'Data get successfully';
             response.data = new DashboardData();
             
-            response.data.activeLeads = [
-                SELECT COUNT()
-                FROM Lead
-                WHERE Lead_Status__c NOT IN ('Unqualified', 'Closed Lost')
-            ];
+            response.data.activeLeads = [SELECT COUNT() FROM Related_Source__c  WHERE Lead_status1__c NOT IN ('Unqualified', 'Closed Lost') AND  Channel_Partner1__c =:cmList[0].Id AND Is_Locked__c = FALSE];
+          List<Related_Source__c> lstrl =[SELECT Id FROM Related_Source__c  WHERE Lead_status1__c NOT IN ('Unqualified', 'Closed Lost') AND  Channel_Partner1__c =:cmList[0].Id AND Is_Locked__c = FALSE];
             
-            response.data.siteVisit = [
-                SELECT COUNT()
-                FROM Site_Visit__c
-                WHERE Status__c = 'Scheduled'
-            ];
+              
+              Set<Id> cpldId= new Set<Id>();
+                
+                for(Related_Source__c ldd : lstrl){
+                    cpldId.add(ldd.Id);
+                    
+                }
+            response.data.siteVisit = [SELECT COUNT() FROM Site_Visit__c  WHERE Status__c = 'Scheduled' AND Related_Source__c = :cpldId];
             
-            response.data.totalSiteVisit = [SELECT COUNT() FROM Site_Visit__c];
+            response.data.totalSiteVisit = [SELECT COUNT() FROM Site_Visit__c WHERE Related_Source__c = :cpldId];
             response.data.totalProjects = [SELECT COUNT() FROM Project__c];
-            response.data.totalBooking = [SELECT COUNT() FROM Booking__c];
+            response.data.totalBooking = [SELECT COUNT() FROM Booking__c WHERE Channel_Partner__c =: cmList[0].Id];
             
-            response.data.todayFollowUp = [
-                SELECT COUNT()
-                FROM Follow_up__c
-                WHERE Scheduled_Date__c = :System.today()
-                AND Status__c = 'Scheduled'
-            ];
+            response.data.todayFollowUp = [SELECT COUNT() FROM Follow_up__c WHERE Scheduled_Date__c = :System.today()
+               								 AND Status__c = 'Scheduled' AND Related_Source__c = :cpldId ];
             
-            response.data.totalFollowUp = [
-                SELECT COUNT()
-                FROM Follow_up__c
-                WHERE Status__c = 'Scheduled'
-            ];
-            response.data.totalInvoices = [
-                SELECT COUNT()
-                FROM Invoice__c
-                WHERE Channel_Partner__c=:cmList[0].Id
-            ];
+            response.data.totalFollowUp = [SELECT COUNT() FROM Follow_up__c
+                WHERE Status__c = 'Scheduled' AND Related_Source__c = :cpldId];
+            response.data.totalInvoices = [SELECT COUNT() FROM Invoice__c  WHERE Channel_Partner__c=:cmList[0].Id];
             
             response.data.totalCommission = '2.5L';
             response.data.totalPayments = 11;
