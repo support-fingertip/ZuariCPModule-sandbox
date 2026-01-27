@@ -35,7 +35,7 @@ global without sharing  class NotificationRead_MobileAPI {
                 return;
             }
             List<Notification__c> notificationlist = new List<Notification__c>();
-            notificationlist = [SELECT Id,Name FROM Notification__c WHERE Name=:NotifcationIds];
+            notificationlist = [SELECT Id,Name FROM Notification__c WHERE Notification_Redirect_Id__c =:NotifcationIds];
             set<string> notficationRecIds = new set<string>();
             for(Notification__c nc : notificationlist){
                 notficationRecIds.add(nc.Id);

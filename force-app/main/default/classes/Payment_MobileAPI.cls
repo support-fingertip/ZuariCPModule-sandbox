@@ -1,3 +1,49 @@
+/**
+ * -----------------------------------------------------------------------------
+ * Class Name  : Payment_MobileAPI
+ * Author      : Praveen Kumar
+ * API Type    : REST (POST)
+ * URL Mapping : /services/apexrest/GetPaymentAPI/*
+ *
+ * Description :
+ * This REST API is used by the mobile application to fetch payment-related
+ * information for a logged-in Channel Partner.
+ *
+ * Key Features:
+ * 1. Validates the requesting user using User_Id__c and fetches the active
+ *    Channel Partner record.
+ *
+ * 2. Returns paginated Payment_Line_Item__c records (15 records per page)
+ *    based on optional filters:
+ *      - Payment Status
+ *      - Project
+ *
+ * 3. Implements progressive (cumulative) totals logic:
+ *      - Page 1  → totals of first 15 records
+ *      - Page 2  → totals of first 30 records
+ *      - Page 3  → totals of first 45 records (or available count)
+ *      - Further pages → totals remain constant once records are exhausted
+ *
+ *    This is achieved by:
+ *      - Fetching record Ids up to the cumulative limit
+ *      - Running an aggregate query (SUM) on those Ids
+ *
+ * 4. Formats total amounts in Lakhs (L) for mobile-friendly display.
+ *
+ * 5. Ensures stateless behavior:
+ *      - Totals are calculated dynamically per request
+ *      - No dependency on previous API calls
+ *
+ * 6. Logs every request and response in Apex_Log__c for auditing and debugging.
+ *
+ * Notes:
+ * - OFFSET is used only for page-level data retrieval.
+ * - Aggregation avoids unsupported SOQL subqueries.
+ * - Designed to be governor-safe and scalable.
+ *
+ * -----------------------------------------------------------------------------
+ */
+
 @RestResource(urlMapping='/GetPaymentAPI/*')
 global without sharing class Payment_MobileAPI {
 
@@ -11,8 +57,7 @@ global without sharing class Payment_MobileAPI {
 
         try {
             // ---------- Deserialize ----------
-            PaymentRequestWrapper input =
-                (PaymentRequestWrapper) JSON.deserialize(requestBody, PaymentRequestWrapper.class);
+            PaymentRequestWrapper input = (PaymentRequestWrapper) JSON.deserialize(requestBody, PaymentRequestWrapper.class);
 
             if (String.isBlank(input.userId)) {
                 sendError('UserId is required', log);
@@ -20,15 +65,11 @@ global without sharing class Payment_MobileAPI {
             }
 
             // ---------- Channel Partner ----------
-            Channel_Partner__c cp = [
-                SELECT Id
-                FROM Channel_Partner__c
-                WHERE User_Id__c = :input.userId
-                AND Active__c = TRUE
-                LIMIT 1
-            ];
+            Channel_Partner__c cp = [SELECT Id FROM Channel_Partner__c WHERE User_Id__c = :input.userId AND Active__c = TRUE LIMIT 1];
 
             // ---------- Build SOQL ----------
+             String baseWhere = ' WHERE Channel_Partner__c = \'' + cp.Id + '\'';
+
             String soql =
                 'SELECT Id, Name,Payment_Line_Item__c, Property_Address__c, Payament_Status__c, ' +
                 'Commission_Amount__c, Booking_Amount__c, Pending_Amount__c ' +
@@ -71,19 +112,33 @@ global without sharing class Payment_MobileAPI {
 
                 data.paymentList.add(pw);
 
-                totalProcessed += (li.Commission_Amount__c != null ? li.Commission_Amount__c : 0);
-                totalPending += (li.Pending_Amount__c != null ? li.Pending_Amount__c : 0);
+               // totalProcessed += (li.Commission_Amount__c != null ? li.Commission_Amount__c : 0);
+                //totalPending += (li.Pending_Amount__c != null ? li.Pending_Amount__c : 0);
             }
+            //
+            Integer cumulativeLimit = (input.pageSize + 1) * 15;
+            List<Payment_Line_Item__c> cumulativeRecords = Database.query(
+                                                            'SELECT Id FROM Payment_Line_Item__c ' + baseWhere + ' ORDER BY CreatedDate ASC  LIMIT ' + cumulativeLimit);
+            Set<Id> cumulativeIds = new Set<Id>();
+            for (Payment_Line_Item__c pli : cumulativeRecords) {
+                cumulativeIds.add(pli.Id);
+            }
+
+            if (!cumulativeIds.isEmpty()) {
+                 AggregateResult ar = [ SELECT  SUM(Commission_Amount__c) totalProcessed, SUM(Pending_Amount__c) totalPending  FROM Payment_Line_Item__c WHERE Id IN :cumulativeIds ];
+
+    totalProcessed = ar.get('totalProcessed') != null  ? (Decimal) ar.get('totalProcessed')  : 0;
+
+    totalPending = ar.get('totalPending') != null   ? (Decimal) ar.get('totalPending') : 0;
+}
 
             data.processedAmount = formatInLakhs(totalProcessed);
             data.pendingAmount = formatInLakhs(totalPending);
 
-            SuccessResponseWrapper res =
-                new SuccessResponseWrapper(true, 'Payment data', data);
+            SuccessResponseWrapper res = new SuccessResponseWrapper(true, 'Payment data', data);
 
             RestContext.response.statusCode = 200;
-            RestContext.response.responseBody =
-                Blob.valueOf(JSON.serialize(res));
+            RestContext.response.responseBody = Blob.valueOf(JSON.serialize(res));
 
             log.Status__c = 'SUCCESS';
             log.Response__c = JSON.serialize(res);
