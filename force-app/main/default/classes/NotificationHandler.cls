@@ -71,12 +71,9 @@ public with sharing class NotificationHandler {
 
         Map<Id, Notification__c> existingNotifications = new Map<Id, Notification__c>();
         for (Notification__c n : [
-            SELECT Id, Related_Source__c, IsActive__c, Notification_Category__c,
-                   Updated_Status__c, Channel_Partner__c, Notification_Redirect_Id__c
-            FROM Notification__c
-            WHERE Related_Source__c IN :relatedSourceIds
-              AND Notification_Category__c = 'User Specific'
-              AND IsActive__c = true
+            SELECT Id, Related_Source__c, IsActive__c, Notification_Category__c,Updated_Status__c, Channel_Partner__c, Notification_Redirect_Id__c
+            FROM Notification__c    
+            WHERE Related_Source__c IN :relatedSourceIds  AND Notification_Category__c = 'User Specific' AND IsActive__c = true
         ]) {
             if (n.Related_Source__c != null) existingNotifications.put(n.Related_Source__c, n);
         }
@@ -106,6 +103,8 @@ public with sharing class NotificationHandler {
                 noti.Notification_Type__c = 'Lead Notification';
                 noti.Notification_Heading__c = 'Lead Status Changed';
                 noti.Notification_Content__c = 'Status has been updated by this Lead Owner';
+                   noti.Notification_Content__c = newRec.Lead_Id__c +' '+'Status has been updated to' +newRec.Lead_status1__c+ 'by Owner';
+             
                 noti.Channel_Partner__c = newRec.Channel_Partner1__c;
                 noti.Notification_Redirect_Id__c = (newRec.Lead_Id__c != null) ? String.valueOf(newRec.Lead_Id__c) : String.valueOf(newRec.Id);
 
@@ -179,7 +178,9 @@ public with sharing class NotificationHandler {
                 noti.Updated_Status__c = newRec.Status__c;
                 noti.Notification_Type__c = 'Site Visit Notification';
                 noti.Notification_Heading__c = 'Site Visit Status Changed';
-                noti.Notification_Content__c = 'Status has been updated by Site Visit Owner';
+              //  noti.Notification_Content__c = 'Status has been updated by Site Visit Owner';
+                   noti.Notification_Content__c = newRec.Name +' '+'Status has been updated to' +newRec.Status__c+ 'by Site Visit Owner';
+             
                 noti.Channel_Partner__c = newRec.Channel_Partner1__c;
                 noti.Notification_Redirect_Id__c = String.valueOf(newRec.Id);
 
@@ -253,7 +254,7 @@ public with sharing class NotificationHandler {
                 noti.Updated_Status__c = newRec.Status__c;
                 noti.Notification_Type__c = 'Followup Notification';
                 noti.Notification_Heading__c = 'Follow Up Status Changed';
-                noti.Notification_Content__c = 'Status has been updated by Follow Up Owner';
+                noti.Notification_Content__c = newRec.Name +' '+'Status has been updated to' +newRec.Status__c+ 'by Follow Up Owner';
                 noti.Channel_Partner__c = newRec.Channel_Partner__c;
                 noti.Notification_Redirect_Id__c = String.valueOf(newRec.Id);
 
@@ -327,9 +328,11 @@ public with sharing class NotificationHandler {
                 noti.Updated_Status__c = newRec.Payament_Status__c;
                 noti.Notification_Type__c = 'Payment Notification';
                 noti.Notification_Heading__c = 'Payment Status Changed';
-                noti.Notification_Content__c = 'Status has been updated by Payment Owner';
+               // noti.Notification_Content__c = 'Status has been updated by Payment Owner';
+                
+                noti.Notification_Content__c = newRec.Payment_Line_Item__c +' '+'Status has been updated to' +newRec.Payament_Status__c+ 'by  Owner';
                 noti.Channel_Partner__c = newRec.Channel_Partner__c;
-                noti.Notification_Redirect_Id__c = String.valueOf(newRec.Id);
+                noti.Notification_Redirect_Id__c = String.valueOf(newRec.Payment_Line_Item__c);
 
                 if (noti.Id != null) toUpdate.add(noti);
             }
