@@ -111,11 +111,11 @@ global without sharing class Payment_MobileAPI {
                 pw.pendingAmount = li.Pending_Amount__c;
 
                 data.paymentList.add(pw);
-
-               // totalProcessed += (li.Commission_Amount__c != null ? li.Commission_Amount__c : 0);
+                    // Commented on 27-01-2026 to optimize total calculation
+               // totalProcessed += (li.Commission_Amount__c != null ? li.Commission_Amount__c : 0); 
                 //totalPending += (li.Pending_Amount__c != null ? li.Pending_Amount__c : 0);
             }
-            //
+            //Added on 27-01-2026 to optimize total calculation
             Integer cumulativeLimit = (input.pageSize + 1) * 15;
             List<Payment_Line_Item__c> cumulativeRecords = Database.query(
                                                             'SELECT Id FROM Payment_Line_Item__c ' + baseWhere + ' ORDER BY CreatedDate ASC  LIMIT ' + cumulativeLimit);
