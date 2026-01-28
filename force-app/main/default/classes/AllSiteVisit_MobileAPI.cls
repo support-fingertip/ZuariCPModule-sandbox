@@ -99,7 +99,7 @@ global without sharing class AllSiteVisit_MobileAPI {
             DateTime toRevisitDate = ld.toRevisitDate;
             DateTime fromRevisitDate = ld.fromRevisitDate;
             
-            
+            System.debug(toCompletedDate +'== '+ fromCompletedDate);
             
             Integer pageSize = ld.pageSize;
             
@@ -112,7 +112,7 @@ global without sharing class AllSiteVisit_MobileAPI {
             }
             
             List<Channel_Partner__c> cmList = [ SELECT Id FROM Channel_Partner__c  WHERE User_Id__c = :userId AND Active__c = TRUE LIMIT 1 ];
-            //Hello
+            
             if (cmList.isEmpty()) {
                 log.Response__c = 'User Not Found';
                 log.Status__c = 'FAIL';
@@ -140,7 +140,7 @@ global without sharing class AllSiteVisit_MobileAPI {
                     
                 }
                 System.debug(cpldId);
-               String baseQuery = 'SELECT Id,Name,Lead_Name__c, Lead_Phone_Number__c,SLead__c,Status__c,SLead__r.Owner.LastName,Project_Name__c,SLead__r.First_Site_Visit_Date_Time__c,SLead__r.Last_Site_Visit_Date_Time__c FROM Site_Visit__c' ;
+               String baseQuery = 'SELECT Id,Name,Lead_Name__c, Related_Source__r.SLead__c,Lead_Phone_Number__c,SLead__c,Status__c,Related_Source__r.SLead__r.Owner.LastName,Project_Name__c,Related_Source__r.SLead__r.First_Site_Visit_Date_Time__c,Related_Source__r.SLead__r.Last_Site_Visit_Date_Time__c FROM Site_Visit__c' ;
                 
                 
                 List<String> conditions = new List<String>();
@@ -200,16 +200,18 @@ global without sharing class AllSiteVisit_MobileAPI {
                baseQuery += ' ORDER BY CREATEDDATE DESC LIMIT 15 OFFSET ' + offsetSize;
                 System.debug(baseQuery);
                 List<Site_Visit__c> svlst = Database.query(baseQuery);
+                System.debug(svlst.size());
                 List<LeadData> responseList = new List<LeadData>();
                 Set<Id> ldId = new Set<Id>();
                 
                 For(Site_Visit__c sv : svlst){
-                    ldId.add(sv.SLead__c);
+                    System.debug(sv.Related_Source__r.SLead__c +'-- '+ sv.Id);
+                    ldId.add(sv.Related_Source__r.SLead__c );
                 }
-                List<Call_Comments__c> listaddnot =[Select id,Lead__c,Comments__c from Call_Comments__c where Lead__c IN : ldId];
+                List<Call_Comments__c> listaddnot =[Select id,Lead__c,Comments__c,Related_Source__c from Call_Comments__c where Lead__c IN : ldId];
                 Map<Id, String> mpapcomet = new Map<id,String>();
                 For(Call_Comments__c cp : listaddnot){
-                    mpapcomet.put(cp.Lead__c,cp.Comments__c);
+                    mpapcomet.put(cp.Related_Source__c,cp.Comments__c);
                 }
                  Map<String, String> projectAddress = new Map<String, String>();
                 For(Project__c Pc : [Select id,Project_Address__c,Project__c from Project__c]){
@@ -218,17 +220,17 @@ global without sharing class AllSiteVisit_MobileAPI {
                 
                 for (Site_Visit__c l : svlst) {
                     LeadData ldResp = new LeadData();
-                    
+                    System.debug(l.Name);
                     ldResp.id = l.Name; // or keep String if preferred
                     ldResp.personName = l.Lead_Name__c;
                     ldResp.personPhoneNumber = l.Lead_Phone_Number__c;
                     ldResp.projectName = l.Project_Name__c;
                     ldResp.projectLocation= projectAddress.get(l.Project_Name__c);
-                    ldResp.firstVisit = l.SLead__r.First_Site_Visit_Date_Time__c;
-                    ldResp.reVisit =l.SLead__r.Last_Site_Visit_Date_Time__c;
+                    ldResp.firstVisit = l.Related_Source__r.SLead__r.First_Site_Visit_Date_Time__c;
+                    ldResp.reVisit =l.Related_Source__r.SLead__r.Last_Site_Visit_Date_Time__c;
                     ldResp.siteVisitStatusId = l.Status__c;
-                    ldResp.additionalNotes = mpapcomet.get(l.SLead__c);
-                    ldResp.relationShipManager = l.SLead__r.Owner.LastName;
+                    ldResp.additionalNotes = mpapcomet.get(l.Related_Source__c);
+                    ldResp.relationShipManager = l.Related_Source__r.SLead__r.Owner.LastName;
                     responseList.add(ldResp);
                 }
                 LeadResponseWrapper response = new LeadResponseWrapper();
@@ -240,7 +242,7 @@ global without sharing class AllSiteVisit_MobileAPI {
                 RestContext.response.responseBody =
                     Blob.valueOf(JSON.serialize(response));
                 
-                log.Response__c = 'Leads fetched successfully';
+                log.Response__c = 'Site Visit fetched successfully';
                 log.Status__c = 'SUCCESS';
                 insert log;
                 return;

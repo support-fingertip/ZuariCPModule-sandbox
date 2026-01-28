@@ -183,14 +183,14 @@ global without sharing class Home_MobileAPI {
                     cpldId.add(ldd.Id);
                     
                 }
-            response.data.siteVisit = [SELECT COUNT() FROM Site_Visit__c  WHERE Status__c = 'Scheduled' AND Related_Source__c = :cpldId];
+            
+            response.data.siteVisit = [SELECT COUNT() FROM Site_Visit__c  WHERE Status__c = 'Scheduled' AND Related_Source__c = :cpldId AND Date__c =Today];
             
             response.data.totalSiteVisit = [SELECT COUNT() FROM Site_Visit__c WHERE Related_Source__c = :cpldId];
             response.data.totalProjects = [SELECT COUNT() FROM Project__c];
             response.data.totalBooking = [SELECT COUNT() FROM Booking__c WHERE Channel_Partner__c =: cmList[0].Id];
             
-            response.data.todayFollowUp = [SELECT COUNT() FROM Follow_up__c WHERE Scheduled_Date__c = :System.today()
-               								 AND Status__c = 'Scheduled' AND Related_Source__c = :cpldId ];
+            response.data.todayFollowUp = [SELECT COUNT() FROM Follow_up__c WHERE Scheduled_Date__c = today AND Status__c = 'Scheduled' AND Related_Source__c = :cpldId ];
             
             response.data.totalFollowUp = [SELECT COUNT() FROM Follow_up__c
                 WHERE Status__c = 'Scheduled' AND Related_Source__c = :cpldId];
@@ -201,7 +201,7 @@ global without sharing class Home_MobileAPI {
             response.data.topPerformedCPs = 13;
             response.data.totalRewards = 17;
             response.data.unReadNotification = unReadNotificationExists;//added on 16th jan 2026
-            List<AggregateResult> projectLeadResults = [SELECT COUNT(Id) totalCount, Allocated_Project__c projectName FROM Lead WHERE Allocated_Project__c != NULL GROUP BY Allocated_Project__c];
+            List<AggregateResult> projectLeadResults = [SELECT COUNT(Id) totalCount, Allocated_Project__c projectName FROM Related_Source__c WHERE Allocated_Project__c != NULL AND Channel_Partner1__c =:cmList[0].Id GROUP BY Allocated_Project__c];
             // ===== Project Leads =====
             response.data.projectLeads = new List<ProjectLead>();
             for (AggregateResult ar : projectLeadResults) {
@@ -211,7 +211,7 @@ global without sharing class Home_MobileAPI {
                     new ProjectLead(projectName, count)
                 );
             }
-            List<AggregateResult> statusLeadResults = [ SELECT COUNT(Id) totalCount, Lead_Status__c leadStatus FROM Lead WHERE Lead_Status__c != NULL GROUP BY Lead_Status__c];
+            List<AggregateResult> statusLeadResults = [ SELECT COUNT(Id) totalCount, Lead_status1__c leadStatus FROM Related_Source__c WHERE Lead_status1__c != NULL and Channel_Partner1__c =:cmList[0].Id GROUP BY Lead_status1__c];
             // ===== Lead Status =====
             response.data.leadsStatus = new List<LeadStatus>();
             for (AggregateResult ar : statusLeadResults) {
